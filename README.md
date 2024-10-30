@@ -22,13 +22,13 @@ Download and install the latest release from the [GitHub repository](https://git
 For Debian-based systems, use the following command:
 
 ```bash
-wget -qO jump-server-latest.deb https://github.com/Ameliorated-LLC/jump-server/releases/latest/download/jump-server.deb && sudo dpkg -i jump-server-latest.deb
+wget -q https://github.com/Ameliorated-LLC/jump-server/releases/latest/download/jump-server.deb && sudo dpkg -i jump-server.deb && rm jump-server.deb
 ```
 
 For RedHat-based systems, use the following command:
 
 ```bash
-wget -qO jump-server-latest.rpm https://github.com/Ameliorated-LLC/jump-server/releases/latest/download/jump-server.rpm && sudo rpm -ivh jump-server-latest.rpm
+wget -q https://github.com/Ameliorated-LLC/jump-server/releases/latest/download/jump-server.rpm && sudo rpm -ivh jump-server.rpm && rm jump-server.rpm
 ```
 
 ## Initial Setup
