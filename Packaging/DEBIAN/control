@@ -1,0 +1,8 @@
+Package: jump-server
+Version: 1.0-1
+Section: base
+Priority: optional
+Architecture: amd64
+Depends: zlib1g, libc6
+Description: Secure jump server
+Maintainer: Styris
