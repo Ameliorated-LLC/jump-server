@@ -35,7 +35,12 @@ else
   chmod +x "$TEMP_DIR/Packaging/DPKG/DEBIAN/postinst"
   chmod +x "$TEMP_DIR/Packaging/DPKG/DEBIAN/postrm"
   chmod +x "$TEMP_DIR/Packaging/DPKG/usr/bin/jumper"
-  dpkg-deb --build --root-owner-group "$TEMP_DIR/Packaging/DPKG" .
+  if [[ "$1" == "-o" && "$2" != "" ]]; then
+    output="$2"
+  else
+    output="."
+  fi
+  dpkg-deb --build --root-owner-group "$TEMP_DIR/Packaging/DPKG" "$output"
 
   rm -rf "$TEMP_DIR"
 fi
