@@ -17,18 +17,18 @@ This project provides a secure SSH jump server for Debian and RedHat-based syste
 
 ### Deployment
 
-Download and install the latest release from the [GitHub repository](https://github.com/Ameliorated-LLC/jump-server), using the correct file for your system type.
+Download and install the latest release from the [GitHub repository](https://github.com/Ameliorated-LLC/jumper), using the correct file for your system type.
 
 For Debian-based systems, use the following command:
 
 ```bash
-wget -q https://github.com/Ameliorated-LLC/jump-server/releases/latest/download/jump-server.deb && sudo dpkg -i jump-server.deb && rm jump-server.deb
+wget -q https://github.com/Ameliorated-LLC/jumper/releases/latest/download/jumper.deb && sudo dpkg -i jumper.deb && rm jumper.deb
 ```
 
 For RedHat-based systems, use the following command:
 
 ```bash
-wget -q https://github.com/Ameliorated-LLC/jump-server/releases/latest/download/jump-server.rpm && sudo rpm -ivh jump-server.rpm && rm jump-server.rpm
+wget -q https://github.com/Ameliorated-LLC/jumper/releases/latest/download/jumper.rpm && sudo rpm -ivh jumper.rpm && rm jumper.rpm
 ```
 
 ## Initial Setup
@@ -36,14 +36,14 @@ wget -q https://github.com/Ameliorated-LLC/jump-server/releases/latest/download/
 After installation, initialize first time setup by running:
 
 ```bash
-sudo jump-server
+sudo jumper
 ```
 
 The setup will:
 
 1. Prompt to set an admin password for future access to the jump server's admin interface.
-2. Prompt to set a password for a new `jump` user that will be used with SSH to use jump-server.
-3. Create the user’s isolated chroot environment and configure SSH config to run jump-server with that user.
+2. Prompt to set a password for a new `jump` user that will be used with SSH to use jumper.
+3. Create the user’s isolated chroot environment and configure SSH config to run jumper with that user.
 
 *If a user named `jump` already exists, it will ask for a username of choice during setup.*
 
@@ -64,8 +64,8 @@ Upon logging in, you will be directed to add SSH entries via the secure admin in
 
 ## Configuration
 
-- User-specific configuration files are located at `/etc/jump-server`.
+- User-specific configuration files are located at `/etc/jumper`.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/Ameliorated-LLC/jump-server/blob/main/LICENSE) file for more details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/Ameliorated-LLC/jumper/blob/main/LICENSE) file for more details.

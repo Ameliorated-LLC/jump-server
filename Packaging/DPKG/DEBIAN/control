@@ -1,0 +1,8 @@
+Package: jumper
+Version: 0.1-1
+Section: base
+Priority: optional
+Architecture: amd64
+Depends: zlib1g, libc6, iputils-ping
+Description: Secure jump server manager
+Maintainer: Styris

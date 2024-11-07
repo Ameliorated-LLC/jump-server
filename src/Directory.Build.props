@@ -1,0 +1,6 @@
+<!-- Directory.Build.props -->
+<Project>
+  <PropertyGroup>
+    <GlobalVersion>0.1.0</GlobalVersion>
+  </PropertyGroup>
+</Project>
