@@ -9,7 +9,7 @@ using SshNet.Keygen.Extensions;
 
 namespace JumpServer.Menus.Setup;
 
-public static class Main
+public static class SetupMain
 {
     public static void Start()
     {
@@ -94,7 +94,7 @@ public static class Main
             bool userCreated = ExecuteCommand("useradd", [ username!, "-m", "-s", "/bin/sh" ]).ExitCode == 0;
             if (!userCreated)
                 throw new Exception("Failed to create user.");
-            bool userPassword = ExecuteCommand("chpasswd", [], $"{username!}:{password}").ExitCode == 0;
+            bool userPassword = ExecuteCommand("chpasswd", Array.Empty<string>(), $"{username!}:{password}").ExitCode == 0;
             if (!userPassword)
                 throw new Exception("Failed to set password.");
             

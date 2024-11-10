@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using CommandLine;
 using CommandLine.Text;
@@ -11,6 +12,7 @@ namespace JumpServer;
 
 public class Program
 {
+    public static readonly string Version = Assembly.GetExecutingAssembly().GetName().Version!.Major + "." + Assembly.GetExecutingAssembly().GetName().Version!.Minor + "." + Assembly.GetExecutingAssembly().GetName().Version!.Build;
     public static bool Authenticated = false;
 
     public class Options
@@ -35,7 +37,7 @@ public class Program
         var parserResult = parser.ParseArguments<Options>(args);
         var helpText = HelpText.AutoBuild(parserResult, h =>
         {
-            h.Heading = "jumper " + "v0.1.0";
+            h.Heading = "jumper v" + Version;
             return h;
         }, e => e);
         if (parserResult.Tag == ParserResultType.NotParsed)
@@ -108,7 +110,7 @@ public class Program
                     }
                 }
 
-                Menus.Setup.Main.Start();
+                Menus.Setup.SetupMain.Start();
                 Exit(null, null);
                 return;
             }

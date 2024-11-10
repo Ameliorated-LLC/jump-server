@@ -1,3 +1,8 @@
+if [[ -z "$1" || ! "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Wrong version format"
+    exit 1
+fi
+
 if ! command -v dotnet &> /dev/null
 then
   export DOTNET_ROOT=$HOME/.dotnet
@@ -11,7 +16,9 @@ TEMP_DIR="/tmp/JumpCompile"
 
 rsync -aq --delete --exclude '/src/Jumper/bin' --exclude '/src/Jumper/obj' --exclude '/src/Jumper/.idea' --exclude '/src/PostInstallScript/bin' --exclude '/src/PostInstallScript/obj' --exclude '/src/PostInstallScript/.idea' --exclude '/src/PostRemoveScript/bin' --exclude '/src/PostRemoveScript/obj' --exclude '/src/PostRemoveScript/.idea' "$GIT_DIR/" "$TEMP_DIR/"
 
-if [ "$1" == "--debug" ]; then
+sed -i "s|<GlobalVersion>.*</GlobalVersion>|<GlobalVersion>$1</GlobalVersion>|" "$TEMP_DIR/src/Directory.Build.props"
+
+if [ "$2" == "--debug" ]; then
   dotnet publish "$TEMP_DIR/src/Jumper/Jumper.csproj" -c Debug -r linux-x64 --self-contained \
     -p:PublishAot=false \
     -p:PublishSingleFile=true \
@@ -35,11 +42,12 @@ else
   chmod +x "$TEMP_DIR/Packaging/DPKG/DEBIAN/postinst"
   chmod +x "$TEMP_DIR/Packaging/DPKG/DEBIAN/postrm"
   chmod +x "$TEMP_DIR/Packaging/DPKG/usr/bin/jumper"
-  if [[ "$1" == "-o" && "$2" != "" ]]; then
-    output="$2"
+  if [[ "$2" == "-o" && "$3" != "" ]]; then
+    output="$3"
   else
     output="."
   fi
+  sed -i "s/Version: .*/Version: $1-1/" "$TEMP_DIR/Packaging/DPKG/DEBIAN/control"
   dpkg-deb --build --root-owner-group "$TEMP_DIR/Packaging/DPKG" "$output"
 
   rm -rf "$TEMP_DIR"
