@@ -152,11 +152,19 @@ public static class Canvas
 
                 if (i < Frame.BottomBar.MinPadding && Frame.FrameHeight < _screenHeight - (Frame.BottomBar.Items.Length * 2))
                 {
-                    for (int j = 0; j < Frame.BottomBar.Items.Length; j++)
+                    (List<string> EffectiveCharacters, List<string?> EscapeCodes, List<char> RealCharacters) truncatedChars = GetCharacters(String.Join(new string(' ', i), Frame.BottomBar.Items))!.Value;
+                    for (i = 1; truncatedChars.EffectiveCharacters.Count > _screenWidth; i++)
                     {
-                        var charLength = Frame.BottomBar.Items[j].RealLength();
-                        WriteCanvas(CalculateCenterX(charLength), _screenHeight - 1 - j, Frame.BottomBar.Items[j]);
+                        var truncatedItems = new string[Frame.BottomBar.Items.Length];
+                        for (var c = 0; c < Frame.BottomBar.Items.Length; c++)
+                        {
+                            var truncated = Frame.BottomBar.Items[c].Replace(" Entry", "");
+                            truncatedItems[c] = truncated;
+                        }
+
+                        truncatedChars = GetCharacters(String.Join(new string(' ', i), truncatedItems))!.Value;
                     }
+                    WriteCanvas(CalculateCenterX(truncatedChars.EffectiveCharacters.Count), _screenHeight - 1, String.Join(null, truncatedChars.EffectiveCharacters));
                 }
             }
 
