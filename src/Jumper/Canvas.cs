@@ -305,7 +305,10 @@ public static class Canvas
     public static void WriteFrame(int y, int x, string? text, AnsiColor? foreground = null, AnsiColor? background = null)
     {
         if (text?.Contains('\n') ?? false)
-            throw new Exception("New lines are not supported.");
+        {
+            throw new Exception($"New lines are not supported: '{text}'");
+        }
+
         //if (text.Length > (Frame.FrameWidth - 2) - x)
         //    throw new Exception("Text length is longer than available frame width.");
         if (y > Frame.FrameHeight - 2)
