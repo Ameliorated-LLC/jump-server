@@ -252,11 +252,19 @@ public static class Canvas
 
                     if (i < Frame.BottomBar.MinPadding && Frame.FrameHeight < _screenHeight - (Frame.BottomBar.Items.Length * 2))
                     {
-                        for (int j = 0; j < Frame.BottomBar.Items.Length; j++)
+                        (List<string> EffectiveCharacters, List<string?> EscapeCodes, List<char> RealCharacters) truncatedChars = GetCharacters(String.Join(new string(' ', i), Frame.BottomBar.Items))!.Value;
+                        for (i = 1; truncatedChars.EffectiveCharacters.Count > _screenWidth; i++)
                         {
-                            var charLength = Frame.BottomBar.Items[j].RealLength();
-                            WriteCanvas(CalculateCenterX(charLength), _screenHeight - 1 - j, Frame.BottomBar.Items[j]);
+                            var truncatedItems = new string[Frame.BottomBar.Items.Length];
+                            for (var c = 0; c < Frame.BottomBar.Items.Length; c++)
+                            {
+                                var truncated = Frame.BottomBar.Items[c].Replace(" Entry", "");
+                                truncatedItems[c] = truncated;
+                            }
+
+                            truncatedChars = GetCharacters(String.Join(new string(' ', i), truncatedItems))!.Value;
                         }
+                        WriteCanvas(CalculateCenterX(truncatedChars.EffectiveCharacters.Count), _screenHeight - 1, String.Join(null, truncatedChars.EffectiveCharacters));
                     }
                 }
 
@@ -347,22 +355,26 @@ public static class Canvas
             return;
         }
 
-        for (var i = 0; i < characters.Count; i++)
+        for (var i = 0; i < characters.Value.EffectiveCharacters.Count; i++)
         {
-            _canvas[y][x + i] = characters[i];
+            _canvas[y][x + i] = characters.Value.EffectiveCharacters[i];
         }
         
-        _lastCursorPositionX = x + characters.Count;
+        _lastCursorPositionX = x + characters.Value.EffectiveCharacters.Count;
         _lastCursorPositionY = y;
     }
     private static void WriteInternalCanvas(string text) => WriteInternalCanvas(_lastCursorPositionX, _lastCursorPositionY, text);
     
-    public static List<string>? GetCharacters(string text)
+    public static (List<string> EffectiveCharacters, List<string?> EscapeCodes, List<char> RealCharacters)? GetCharacters(string text)
     {
         if (string.IsNullOrEmpty(text))
             return null;
         
-        List<string> result = new List<string>();
+        var result = (
+            EffectiveCharacters: new List<string>(),
+            EscapeCodes: new List<string?>(),
+            RealCharacters: new List<char>()
+        );
         Regex regex = new Regex(@"\u001b\[[0-9;?]*[A-Za-z]");
         int currentIndex = 0;
         StringBuilder currentEscapeCodes = new StringBuilder();
@@ -392,7 +404,9 @@ public static class Canvas
             else
             {
                 // Process character
-                result.Add(currentEscapeCodes.ToString() + text[currentIndex]);
+                result.RealCharacters.Add(text[currentIndex]);
+                result.EscapeCodes.Add(currentEscapeCodes.Length > 0 ? currentEscapeCodes.ToString() : null);
+                result.EffectiveCharacters.Add(currentEscapeCodes.ToString() + text[currentIndex]);
                 currentEscapeCodes.Clear();
                 // Advance currentIndex
                 currentIndex++;
@@ -408,9 +422,10 @@ public static class Canvas
         }
 
         // If currentEscapeCodes is not empty, append it to the last element
-        if (currentEscapeCodes.Length > 0 && result.Count > 0)
+        if (currentEscapeCodes.Length > 0 && result.EffectiveCharacters.Count > 0)
         {
-            result[^1] += currentEscapeCodes.ToString();
+            result.EscapeCodes[^1] += currentEscapeCodes.Length > 0 ? currentEscapeCodes.ToString() : null;
+            result.EffectiveCharacters[^1] += currentEscapeCodes.ToString();
         }
         else if (currentEscapeCodes.Length > 0)
         {

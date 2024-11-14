@@ -23,9 +23,10 @@ public class JumpMenu
             new DynamicBar() { Center = new Text(Configuration.Current.ServerName, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
             admin || Program.CommandLineOptions.RestrictAdminAccess ? null : new DynamicBar() { Center = new Text("Press Ctrl + X to unlock admin options", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() },
             !admin ? null : new BottomBar() { Items = [
-                " Ctrl+A ".ToColored(null, AnsiColor.Grey35) + " Add Entry ".ToColored(null, AnsiColor.Grey19),
-                " Ctrl+D ".ToColored(null, AnsiColor.Grey35) + " Delete Entry ".ToColored(null, AnsiColor.Grey19),
-                " Ctrl+E ".ToColored(null, AnsiColor.Grey35) + " Edit Entry ".ToColored(null, AnsiColor.Grey19),
+                " ^A ".ToColored(null, AnsiColor.Grey35) + " Add Entry ".ToColored(null, AnsiColor.Grey19),
+                " ^D ".ToColored(null, AnsiColor.Grey35) + " Delete Entry ".ToColored(null, AnsiColor.Grey19),
+                " ^E ".ToColored(null, AnsiColor.Grey35) + " Edit Entry ".ToColored(null, AnsiColor.Grey19),
+                " ^X ".ToColored(null, AnsiColor.Grey35) + " Lock ".ToColored(null, AnsiColor.Grey19),
                 ] }));
 
         if (_options.Count < 1)

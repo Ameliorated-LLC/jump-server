@@ -6,7 +6,7 @@ public static class Extensions
 {
     public static string ToColored(this string content, AnsiColor? foreground) => new Text(content, foreground, (AnsiColor?)null).Compile();
     public static string ToColored(this string content, AnsiColor? foreground, AnsiColor? background) => new Text(content, foreground, background).Compile();
-    public static int RealLength(this string content) => Canvas.GetCharacters(content)?.Count ?? 0;
+    public static int RealLength(this string content) => Canvas.GetCharacters(content)?.EffectiveCharacters.Count ?? 0;
 
     
     /*
