@@ -159,8 +159,8 @@ public class LocationSetupMenu
                     
                     Canvas.WriteFrameLine(0, 1, $"Connected to '{location.Username}@{location.IP}'", AnsiColor.Cornsilk1);
                     var hostnameResult = client.RunCommand("hostname");
-                    if (hostnameResult.ExitStatus == 0 && Regex.IsMatch(hostnameResult.Result, @"^(?!.*\.\.)[A-Za-z0-9.-]+$"))
-                        location.Name = hostnameResult.Result;
+                    if (hostnameResult.ExitStatus == 0 && Regex.IsMatch(hostnameResult.Result, @"^(?!.*\.\.)[A-Za-z0-9.-]+$") && !(hostnameResult.Result.Trim().Contains('\n') || hostnameResult.Result.Length > 22))
+                        location.Name = hostnameResult.Result.Trim();
                     Thread.Sleep(random.Next(250, 500));
                 
                     bool sudoFailed = false;
@@ -237,18 +237,18 @@ public class LocationSetupMenu
                             var result = client.RunCommand(
                                 @$"grep -q '^Port {port}' /etc/ssh/sshd_config || echo ""{password}"" | sudo -S bash -c ""((grep -q '^Port .*' /etc/ssh/sshd_config && sed -i 's/^PasswordAuthentication .*$/\# Port 22/' /etc/ssh/sshd_config) & sed -i '1i Port {port}\n' /etc/ssh/sshd_config) && exit 117""");
                             if (result.ExitStatus != 0 && result.ExitStatus != 117)
-                                Canvas.WriteFrameLine(y - 1, 1, $"Failed to disable password auth", AnsiColor.Yellow);
+                                Canvas.WriteFrameLine(y - 1, 1, $"Failed randomize SSH port", AnsiColor.Yellow);
                             else
                             {
                                 location.Port = port;
-                                Canvas.WriteFrameLine(y - 1, 1, $"Disabled password auth", AnsiColor.Cornsilk1);
+                                Canvas.WriteFrameLine(y - 1, 1, $"Randomized SSH port", AnsiColor.Cornsilk1);
                             }
 
                             if (result.ExitStatus == 117)
                                 restartSsh = true;
                         } 
                         else
-                            Canvas.WriteFrameLine(y - 1, 1, $"Disabled password auth", AnsiColor.Cornsilk1);
+                            Canvas.WriteFrameLine(y - 1, 1, $"Randomized SSH port", AnsiColor.Cornsilk1);
                         
                         Thread.Sleep(random.Next(250, 500));
                     }
