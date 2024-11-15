@@ -56,9 +56,10 @@ public class JumpMenu
         ConsoleKeyInfo keyInfo;
         while ((keyInfo = Console.ReadKey(true)).Key != ConsoleKey.Enter)
         {
-            if (keyInfo.Key == ConsoleKey.X && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control) && !Program.Authenticated && !Program.CommandLineOptions.RestrictAdminAccess)
+            if (keyInfo.Key == ConsoleKey.X && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control) && !Program.CommandLineOptions.RestrictAdminAccess)
             {
-                index = -1;
+                Program.Authenticated = false;
+                index = -2;
                 break;
             }
             if (keyInfo.Key == ConsoleKey.E && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control) && Program.Authenticated)
