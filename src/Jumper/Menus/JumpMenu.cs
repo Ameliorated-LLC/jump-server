@@ -58,8 +58,14 @@ public class JumpMenu
         {
             if (keyInfo.Key == ConsoleKey.X && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control) && !Program.CommandLineOptions.RestrictAdminAccess)
             {
-                Program.Authenticated = false;
-                index = -2;
+                if (Program.Authenticated)
+                {
+                    Program.Authenticated = false;
+                    index = -2;
+                    break;
+                }
+
+                index = -1;
                 break;
             }
             if (keyInfo.Key == ConsoleKey.E && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control) && Program.Authenticated)
