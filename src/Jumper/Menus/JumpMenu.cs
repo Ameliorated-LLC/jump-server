@@ -96,7 +96,7 @@ public class JumpMenu
         _options.ForEach(x => x.Location.PropertyChanged -= LocationOnPropertyChanged!);
         _lock.Wait();
 
-        if (index != -1)
+        if (index > -1)
         {
             Program.Exit(null, null);
             Console.WriteLine();
