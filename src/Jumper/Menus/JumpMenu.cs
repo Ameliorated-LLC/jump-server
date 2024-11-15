@@ -80,6 +80,7 @@ public class JumpMenu
                 {
                     Configuration.Current.Locations[index].Dispose();
                     Configuration.Current.Locations.Remove(Configuration.Current.Locations[index]);
+                    File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
                 }
                 return;
             }

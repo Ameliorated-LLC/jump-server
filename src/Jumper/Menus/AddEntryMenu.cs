@@ -29,7 +29,7 @@ public class AddEntryMenu
 
 
         Options.ForEach(x => x.Value = "");
-        Options.First(x => x.Name == "Port").Value = "22";
+        Options.First(x => x.Name == "SSH Port").Value = "22";
 
         WriteOptions();
         
