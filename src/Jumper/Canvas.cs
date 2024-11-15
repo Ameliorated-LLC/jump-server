@@ -490,7 +490,7 @@ public static class Canvas
     public static bool OptionPrompt(string title, string message, string option1, string option2, bool option2Disabled = false)
     {
         Canvas.Set(new Frame(title, 10, 52,
-            new DynamicBar() { Center = new Text(Configuration.Current.ServerName, AnsiColor.Grey93, (AnsiColor?)null).Compile() }
+            new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() }
             //new DynamicBar() { Center = new Text("Press Ctrl + X to cancel setup", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }
         ));
         

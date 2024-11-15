@@ -19,8 +19,8 @@ public class JumpMenu
 
     public void Show(bool admin)
     {
-        Canvas.Set(new Frame("Jump", _options.Count + 4, 52,
-            new DynamicBar() { Center = new Text(Configuration.Current.ServerName, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
+        Canvas.Set(new Frame(Configuration.Current.ServerName, _options.Count + 4, 52,
+            new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
             admin || Program.CommandLineOptions.RestrictAdminAccess ? null : new DynamicBar() { Center = new Text("Press Ctrl + X to unlock admin options", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() },
             !admin ? null : new BottomBar() { Items = [
                 " ^A ".ToColored(null, AnsiColor.Grey35) + " Add Entry ".ToColored(null, AnsiColor.Grey19),
@@ -81,7 +81,7 @@ public class JumpMenu
                 var result = AddEntryMenu.Show();
                 if (result.Location != null)
                 {
-                    LocationSetupMenu.Show(result.Location, result.ImportKey, result.DisablePasswordAuth, result.RequireTOTP);
+                    LocationSetupMenu.Show(result.Location, result.ImportKey, result.DisablePasswordAuth, result.RandomizeSSHPort, result.RequireTOTP);
                 }
                 return;
             }

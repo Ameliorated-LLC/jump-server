@@ -10,19 +10,20 @@ public class AddEntryMenu
        // new Option() { Type = OptionType.TextInputField, Name = "Name", MinLength = 1 },
         new Option() { Type = OptionType.TextInputField, Name = "Username", Regex = @"^[a-z][a-z0-9_-]{0,31}$", MinLength = 1 },
         new Option() { Type = OptionType.TextInputField, Name = "IP Address", Regex = @"^(?!.*\.\.)[A-Za-z0-9.-]+$", MinLength = 1 },
-        new Option() { Type = OptionType.NumberInputField, Name = "Port", Value = "22", MaxLength = 5, MinLength = 1},
+        new Option() { Type = OptionType.NumberInputField, Name = "SSH Port", Value = "22", MaxLength = 5, MinLength = 1},
         new Option() { Type = OptionType.ToggleButton, Name = "Import SSH Public Key", Toggled = true },
         new Option() { Type = OptionType.ToggleButton, Name = "Disable Password Auth", Toggled = true },
+        new Option() { Type = OptionType.ToggleButton, Name = "Randomize Remote SSH Port", Toggled = false},
         //new Option() { Type = OptionType.ToggleButton, Name = "Require TOTP 2FA Auth", Toggled = false},
         
         new Option() { Type = OptionType.Selection, Name = " Connect ", Validater = true },
         new Option() { Type = OptionType.Selection, Name = " Cancel " },
     ];
 
-    public static (Location? Location, bool ImportKey, bool DisablePasswordAuth, bool RequireTOTP) Show()
+    public static (Location? Location, bool ImportKey, bool DisablePasswordAuth, bool RandomizeSSHPort, bool RequireTOTP) Show()
     {
         Canvas.Set(new Frame("Add Entry", 16, 52,
-            new DynamicBar() { Center = new Text(Configuration.Current.ServerName, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
+            new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
             new DynamicBar() { Center = new Text("Use the space bar to toggle options", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }
             ));
 
@@ -71,6 +72,25 @@ public class AddEntryMenu
                 Options[index].Toggled = !Options[index].Toggled;
                 Canvas.WriteFrame(Options[index].InputY, Options[index].InputX, Options[index].Toggled ? "X".ToColored(AnsiColor.Grey89) : " ");
                 Canvas.WriteFrame(Options[index].InputY, Options[index].InputX, "");
+                
+                /*
+                if (!Options[index].Toggled)
+                    continue;
+                if (Options[index].Name == "Randomize Remote SSH Port")
+                {
+                    var portOption = Options.First(x => x.Name == "SSH Port");
+                    if (Options[index].Toggled)
+                    {
+                        Canvas.WriteFrame(Options[index].InputY, Options[index].StartX, "Random", AnsiColor.Grey70, AnsiColor.Grey19);
+                        portOption.Disabled = true;
+                    }
+                    else
+                    {
+                        Canvas.WriteFrame(Options[index].InputY, Options[index].StartX, portOption.Value + "     ", AnsiColor.Grey85, AnsiColor.Grey19);
+                        portOption.Disabled = false;
+                    }
+                }
+                */
             }
             else if ((Options[index].Type == OptionType.NumberInputField || Options[index].Type == OptionType.TextInputField) && keyInfo.Key == ConsoleKey.Backspace && Options[index].Value.Length > 0)
             {
@@ -111,18 +131,20 @@ public class AddEntryMenu
         if (Options[index].Name == " Connect ")
             return (new Location()
                 {
-                    Name = Options.First(x => x.Name == "IP Address").Value,
-                    Username = Options.First(x => x.Name == "Username").Value,
-                    IP = Options.First(x => x.Name == "IP Address").Value,
-                    Port = int.Parse(Options.First(x => x.Name == "Port").Value),
-                }, Options.First(x => x.Name == "Import SSH Public Key").Toggled, Options.First(x => x.Name == "Disable Password Auth").Toggled,
+                    Name = Options.First(x => x.Name == "IP Address").Value.Trim(),
+                    Username = Options.First(x => x.Name == "Username").Value.Trim(),
+                    IP = Options.First(x => x.Name == "IP Address").Value.Trim(),
+                    Port = int.Parse(Options.First(x => x.Name == "SSH Port").Value.Trim()),
+                }, Options.First(x => x.Name == "Import SSH Public Key").Toggled, Options.First(x => x.Name == "Disable Password Auth").Toggled, Options.First(x => x.Name == "Randomize Remote SSH Port").Toggled,
                 false); //Options.First(x => x.Name == "Require TOTP 2FA Auth").Toggled);
         else
-            return (null, false, false, false);
+            return (null, false, false, false, false);
     }
     
     private static void Select(ref int index, int newIndex)
     {
+        if (Options.Count > newIndex && newIndex >= 0 && Options[newIndex].Disabled)
+            newIndex = index < newIndex ? newIndex + 1 : newIndex - 1;
         if (Options.Count > newIndex && newIndex >= 0 && Options[newIndex].Validater && !Options.All(x => x.MinLength == null || x.MinLength <= x.Value.Length))
             newIndex++;
         if (newIndex > Options.Count - 1 || newIndex < 0)
@@ -231,5 +253,6 @@ public class AddEntryMenu
         public string? Regex { get; set; }
         public bool Validater { get; set; }
         public bool Toggled { get; set; }
+        public bool Disabled { get; set; }
     }
 }

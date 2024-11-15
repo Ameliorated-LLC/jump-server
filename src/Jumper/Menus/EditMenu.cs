@@ -7,7 +7,7 @@ public class EditMenu
     public static void Show()
     {
         Canvas.Set(new Frame("Edit Entry", Configuration.Current.Locations.Count + 4, 52,
-            new DynamicBar() { Center = new Text(Configuration.Current.ServerName, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
+            new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
             new DynamicBar() { Center = new Text("Press Ctrl + X to return to menu", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }));
 
         if (Configuration.Current.Locations.Count < 1)

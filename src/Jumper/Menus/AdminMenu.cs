@@ -11,7 +11,7 @@ public class AdminMenu
         Start:
         
         Canvas.Set(new Frame("Admin", 8, 52,
-            new DynamicBar() { Center = new Text(Configuration.Current.ServerName, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
+            new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
             new DynamicBar() { Center = new Text("Press Ctrl + X to return to menu", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile()
             }));
         
@@ -40,7 +40,7 @@ public class AdminMenu
             var result = AddEntryMenu.Show();
             if (result.Location != null)
             {
-                LocationSetupMenu.Show(result.Location, result.ImportKey, result.DisablePasswordAuth, result.RequireTOTP);
+                LocationSetupMenu.Show(result.Location, result.ImportKey, result.DisablePasswordAuth, result.RandomizeSSHPort, result.RequireTOTP);
             }
             goto Start;
         }

@@ -9,7 +9,7 @@ namespace JumpServer.Menus;
 
 public class LocationSetupMenu
 {
-    public static void Show(Location location, bool importKey, bool disablePasswordAuth, bool requireTOTP)
+    public static void Show(Location location, bool importKey, bool disablePasswordAuth, bool randomizeSSHPort, bool requireTOTP)
     {
         var height = 8;
 
@@ -20,10 +20,11 @@ public class LocationSetupMenu
 
         if (importKey) height++;
         if (disablePasswordAuth) height++;
+        if (randomizeSSHPort) height++;
         if (requireTOTP) height++;
 
         Canvas.Set(new Frame("Entry Setup", height, 52,
-            new DynamicBar() { Center = new Text(Configuration.Current.ServerName, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
+            new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
             new DynamicBar() { Center = new Text("Press Ctrl + X to cancel setup", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }
            ));
 
@@ -162,6 +163,8 @@ public class LocationSetupMenu
                         location.Name = hostnameResult.Result;
                     Thread.Sleep(random.Next(250, 500));
                 
+                    bool sudoFailed = false;
+                    
                     if (importKey)
                     {
                         y++;
@@ -173,26 +176,86 @@ public class LocationSetupMenu
                         var keyText = File.ReadAllText("/jumper-ed25519.pub");
                         var result = client.RunCommand($"grep -qxF \"{keyText.Trim()}\" ~/.ssh/authorized_keys || echo \"{Environment.NewLine + keyText}\" >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys");
                         if (result.ExitStatus != 0)
+                        {
                             Canvas.WriteFrameLine(1, 1, $"Failed to copy public key", AnsiColor.Yellow);
+                            if (result.Error.Contains("\nsudo:"))
+                                sudoFailed = true;
+                        }
                         else
                             Canvas.WriteFrameLine(1, 1, $"Copied public key", AnsiColor.Cornsilk1);
+
                         
                         Thread.Sleep(random.Next(250, 500));
                     }
+
+                    bool restartSsh = false;
 
                     if (disablePasswordAuth)
                     {
                         y++;
                         Canvas.WriteFrameLine(y - 1, 1, $"Disabling password auth...", AnsiColor.Cornsilk1);
                         Thread.Sleep(random.Next(750, 1500));
-                        
-                        var result = client.RunCommand(@$"grep -q '^PasswordAuthentication no' /etc/ssh/sshd_config || echo ""{password}"" | sudo -S bash -c ""((grep -q '^PasswordAuthentication .*' /etc/ssh/sshd_config && sed -i 's/^PasswordAuthentication .*$/\# PasswordAuthentication no/' /etc/ssh/sshd_config) & sed -i '1i PasswordAuthentication no\n' /etc/ssh/sshd_config) && systemctl restart ssh""");
-                        if (result.ExitStatus != 0)
+
+                        var result = client.RunCommand(
+                            @$"grep -q '^PasswordAuthentication no' /etc/ssh/sshd_config || echo ""{password}"" | sudo -S bash -c ""((grep -q '^PasswordAuthentication .*' /etc/ssh/sshd_config && sed -i 's/^PasswordAuthentication .*$/\# PasswordAuthentication no/' /etc/ssh/sshd_config) & sed -i '1i PasswordAuthentication no\n' /etc/ssh/sshd_config) && exit 117""");
+                        if (result.ExitStatus != 0 && result.ExitStatus != 117)
+                        {
                             Canvas.WriteFrameLine(y - 1, 1, $"Failed to disable password auth", AnsiColor.Yellow);
+                            if (result.Error.Contains("\nsudo:"))
+                                sudoFailed = true;
+                        }
+                        else
+                            Canvas.WriteFrameLine(y - 1, 1, $"Disabled password auth", AnsiColor.Cornsilk1);
+
+                        if (result.ExitStatus == 117)
+                            restartSsh = true;
+                        
+                        Thread.Sleep(random.Next(250, 500));
+                    }
+                    
+                    if (randomizeSSHPort)
+                    {
+                        y++;
+                        Canvas.WriteFrameLine(y - 1, 1, $"Randomizing SSH port...", AnsiColor.Cornsilk1);
+                        Thread.Sleep(random.Next(250, 750));
+                        int port = RandomNumberGenerator.GetInt32(11001, 49151);
+
+                        for (int i = 0; i < 50; i++)
+                        {
+                            port = RandomNumberGenerator.GetInt32(11001, 49151);
+                            var result = client.RunCommand(@$"echo ""{password}"" | sudo -S bash -c ""lsof -nP -i:{port}""");
+                            if (result.ExitStatus != 0)
+                            {
+                                if (result.Error.Contains("\nsudo:"))
+                                    sudoFailed = true;
+                                break;
+                            }
+                        }
+
+                        if (!sudoFailed)
+                        {
+                            var result = client.RunCommand(
+                                @$"grep -q '^Port {port}' /etc/ssh/sshd_config || echo ""{password}"" | sudo -S bash -c ""((grep -q '^Port .*' /etc/ssh/sshd_config && sed -i 's/^PasswordAuthentication .*$/\# Port 22/' /etc/ssh/sshd_config) & sed -i '1i Port {port}\n' /etc/ssh/sshd_config) && exit 117""");
+                            if (result.ExitStatus != 0 && result.ExitStatus != 117)
+                                Canvas.WriteFrameLine(y - 1, 1, $"Failed to disable password auth", AnsiColor.Yellow);
+                            else
+                            {
+                                location.Port = port;
+                                Canvas.WriteFrameLine(y - 1, 1, $"Disabled password auth", AnsiColor.Cornsilk1);
+                            }
+
+                            if (result.ExitStatus == 117)
+                                restartSsh = true;
+                        } 
                         else
                             Canvas.WriteFrameLine(y - 1, 1, $"Disabled password auth", AnsiColor.Cornsilk1);
                         
                         Thread.Sleep(random.Next(250, 500));
+                    }
+
+                    if (restartSsh)
+                    {
+                        client.RunCommand($@"echo ""{password}"" | sudo -S bash -c ""sudo systemctl restart ssh || sudo systemctl restart sshd""");
                     }
 
                     y++;

@@ -27,7 +27,7 @@ public static class NoLocationsMenu
             if (result.Location == null)
                 continue;
             
-            LocationSetupMenu.Show(result.Location, result.ImportKey, result.DisablePasswordAuth, result.RequireTOTP);
+            LocationSetupMenu.Show(result.Location, result.ImportKey, result.DisablePasswordAuth, result.RandomizeSSHPort, result.RequireTOTP);
             
             break;
         }
