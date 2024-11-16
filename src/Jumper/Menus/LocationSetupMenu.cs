@@ -139,7 +139,7 @@ public class LocationSetupMenu
                                 
                                 c++;
 
-                                password = ReadPassword(" Sudo password: ", true);
+                                password = ReadPassword(" Sudo password: ", c == 0);
                                 TerminalCommands.Execute(TerminalCommand.HideCursor);
                                 if (password == null)
                                 {
