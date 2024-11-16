@@ -9,6 +9,7 @@ command -v gpg > /dev/null 2>&1 || { echo "Error: gpg command is not available" 
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+chmod +x "$SCRIPT_DIR/build_dpkg.sh"
 "$SCRIPT_DIR/build_dpkg.sh" $1 -o "$SCRIPT_DIR/PPA/pool/main/j/jumper/jumper_$1-1~noble-jammy-focal_amd64.deb" || { echo "Error: build_dpkg failed" >&2; exit 1; }
 
 rm -rf "/tmp/JumpPPA"
@@ -26,6 +27,7 @@ rm -f "ppa-private-key.asc"
 
 for DIST in "/tmp/JumpPPA"/*; do
     if [ -d "$DIST" ]; then
+        cd "$DIST"
         # Generate Packages files and compress them
         for ARCH_DIR in */binary-*; do
             [ -d "$ARCH_DIR" ] && dpkg-scanpackages --multiversion ../../../pool/main > "$ARCH_DIR/Packages" && gzip -k -f "$ARCH_DIR/Packages"
@@ -35,6 +37,8 @@ for DIST in "/tmp/JumpPPA"/*; do
         apt-ftparchive release . > Release
         gpg --local-user "styris_packaging@fastmail.com" -abs -o - Release > Release.gpg
         gpg --local-user "styris_packaging@fastmail.com" --clearsign -o - Release > InRelease
+
+        cd /tmp/JumpPPA
     fi
 done
 
