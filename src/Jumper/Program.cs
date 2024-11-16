@@ -74,12 +74,14 @@ Usage:
   jumper [command] [options]
 
 Commands:
+
   change-password <username>   Change jumper admin password for an already setup jumper chroot user.
 
   run                          Run jumper normally.
     --restrict-admin           Prevents access to admin menu even with password. (Default: false)
 
 Options:
+
   --help                       Display this help screen.
   --version                    Display version information.
 ");
@@ -131,7 +133,7 @@ Options:
                 
                 configuration.AdminPassword = base64;
                 
-                File.WriteAllText(file, Configuration.Current.Serialize());
+                File.WriteAllText(file, configuration.Serialize());
                 Console.WriteLine(Environment.NewLine + "Password changed successfully.".ToColored(AnsiColor.Green3));
             }
             catch (Exception e)
