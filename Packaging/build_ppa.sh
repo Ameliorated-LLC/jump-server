@@ -27,14 +27,15 @@ rm -f "ppa-private-key.asc"
 
 for DIST in "/tmp/JumpPPA/dists"/*; do
     if [ -d "$DIST" ]; then
-        cd "$DIST/main/binary-amd64"
-        
-        dpkg-scanpackages --multiversion ../../../../pool/main > Packages && gzip -k -f "Packages"
+        DIST_FOLDER=$(basename "$DIST")
+
+        dpkg-scanpackages --multiversion pool/ > "dists/$DIST_FOLDER/main/binary-amd64/Packages"
+        gzip -k -f "dists/$DIST_FOLDER/main/binary-amd64/Packages" > "dists/$DIST_FOLDER/main/binary-amd64/Packages.gz"
 
         # Generate Release, Release.gpg, and InRelease files
-        apt-ftparchive release . > Release
-        gpg --local-user "styris_packaging@fastmail.com" -abs -o - Release > Release.gpg
-        gpg --local-user "styris_packaging@fastmail.com" --clearsign -o - Release > InRelease
+        apt-ftparchive release "dists/$DIST_FOLDER" > "dists/$DIST_FOLDER/Release"
+        gpg --local-user "styris_packaging@fastmail.com" -abs -o - "dists/$DIST_FOLDER/Release" > "dists/$DIST_FOLDER/Release.gpg"
+        gpg --local-user "styris_packaging@fastmail.com" --clearsign -o - "dists/$DIST_FOLDER/Release" > "dists/$DIST_FOLDER/InRelease"
 
         cd /tmp/JumpPPA
     fi
