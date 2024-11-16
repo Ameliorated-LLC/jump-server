@@ -37,7 +37,7 @@ public class JumpMenu
             for (var i = 0; i < _options.Count; i++)
             {
                 _options[i].Location.PropertyChanged += LocationOnPropertyChanged!;
-                Canvas.WriteFrameLine(i, 0, $"   {_options[i].Location.Name} ({_options[i].Location.Username})", AnsiColor.Cornsilk1);
+                Canvas.WriteFrameLine(i, 0, $"   {Truncate(_options[i].Location.Name, 35 - Math.Min(_options[i].Location.Username.Length, 30))} ({Truncate(_options[i].Location.Username, 30)})", AnsiColor.Cornsilk1);
                 Canvas.WriteFrame(i, -10,
                     (_options[i].Location.Connected == true ? (PingTo4CharText(_options[i].Location.Ping) + "ms ").ToColored(AnsiColor.Grey93) : "   0ms ".ToColored(AnsiColor.Grey23)) +
                     "• ".ToColored(_options[i].Location.Connected == null ? AnsiColor.Grey23 : _options[i].Location.Connected!.Value ? AnsiColor.Green : AnsiColor.Red));
@@ -188,12 +188,12 @@ public class JumpMenu
         lock (_writeLock)
         {
             _options[index].Selected = false;
-            Canvas.WriteFrameLine(index, 0, $"   {_options[index].Location.Name} ({_options[index].Location.Username})", AnsiColor.Cornsilk1);
+            Canvas.WriteFrameLine(index, 0, $"   {Truncate(_options[index].Location.Name, 35 - Math.Min(_options[index].Location.Username.Length, 30))} ({Truncate(_options[index].Location.Username, 30)})", AnsiColor.Cornsilk1);
             Canvas.WriteFrame(index, -10, 
                 (_options[index].Location.Connected == true ? (PingTo4CharText(_options[index].Location.Ping) + "ms ").ToColored(AnsiColor.Grey93)  : "   0ms ".ToColored(AnsiColor.Grey23)) + "• ".ToColored(_options[index].Location.Connected == null ? AnsiColor.Grey23 : _options[index].Location.Connected!.Value ? AnsiColor.Green : AnsiColor.Red));
             index = newIndex;
             _options[index].Selected = true;
-            Canvas.WriteFrameLine(index, 0, $" > {_options[index].Location.Name} ({_options[index].Location.Username})", AnsiColor.Black, AnsiColor.Grey93);
+            Canvas.WriteFrameLine(index, 0, $" > {Truncate(_options[index].Location.Name, 35 - Math.Min(_options[index].Location.Username.Length, 30))} ({Truncate(_options[index].Location.Username, 30)})", AnsiColor.Black, AnsiColor.Grey93);
             Canvas.WriteFrame(index, -10, 
                 (_options[index].Location.Connected == true ? (PingTo4CharText(_options[index].Location.Ping) + "ms ").ToColored(AnsiColor.Black)  : "   0ms ".ToColored(AnsiColor.Grey23)) + "• ".ToColored(_options[index].Location.Connected == null ? AnsiColor.Grey23 : _options[index].Location.Connected!.Value ? AnsiColor.Green : AnsiColor.Red),
                 null, AnsiColor.Grey93);
@@ -201,7 +201,11 @@ public class JumpMenu
     }
 
     private static string PingTo4CharText(int ping) => new string(' ', -(Math.Min(ping.ToString().Length, 4) - 4)) + (ping.ToString().Length > 4 ? ping.ToString().Substring(0, 4) :  ping.ToString());
-
+    public static string Truncate(string value, int maxLength)
+    {
+        if (string.IsNullOrEmpty(value)) return value;
+        return value.Length <= maxLength ? value : value.Substring(0, maxLength) + "...";
+    }
 
     private static SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
     private static object _writeLock = new object();
