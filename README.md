@@ -11,14 +11,16 @@ This project provides a secure SSH frontend for Debian and RedHat-based systems.
 
 ## Deployment
 
-**Prerequisites:**
+**Prerequisites**
 
 - Debian or RedHat-based Linux system
 - OpenSSH Client (`ssh`) and OpenSSH Server (`sshd`)
 
+### Ubuntu/Debian
+
 For Debian-based systems, see the following installation methods:
 
-### APT (Recommended)
+#### APT (Recommended)
 
 ```bash
 curl -s --compressed "https://ameliorated-llc.github.io/jumper/Packaging/PPA/KEY.gpg" | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/jumper.gpg >/dev/null
@@ -26,15 +28,17 @@ sudo curl -s --compressed -o /etc/apt/sources.list.d/jumper.list "https://amelio
 sudo apt update && sudo apt install jumper
 ```
 
-### DPKG
+#### DPKG
 
 ```bash
 curl -sL https://github.com/Ameliorated-LLC/jumper/releases/latest/download/jumper.deb -o jumper.deb && sudo dpkg -i jumper.deb && rm jumper.deb
 ```
 
+### RHEL/Fedora
+
 For RedHat-based systems, see the following installation methods:
 
-### RPM
+#### RPM
 
 ```bash
 curl -sL https://github.com/Ameliorated-LLC/jumper/releases/latest/download/jumper.rpm -o jumper.rpm && sudo rpm -ivh jumper.rpm && rm jumper.rpm
