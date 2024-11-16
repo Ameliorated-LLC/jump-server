@@ -1,5 +1,5 @@
 <h1 align="center">Jumper</h1>
-<h3 align="center">Secure SSH Frontend</h3>
+<h3 align="center">Secure Ncurses-like SSH Jump Server</h3>
 
 ---
 
@@ -7,7 +7,7 @@
 
 ---
 
-This project provides a secure SSH frontend for Debian and Red Hat-based systems. Jumper automates creating a secure jump environment, along with managing jump targets and importing keys—all wrapped in a clean terminal interface.
+This project provides a secure SSH jump server frontend for Linux systems. Jumper features an intuitive, ncurses-inspired interface that makes setup and management straightforward. It automates environment creation, jump target management, and key imports in a clean, user-friendly terminal interface.
 
 ## Deployment
 
