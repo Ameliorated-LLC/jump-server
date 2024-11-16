@@ -116,7 +116,7 @@ public class LocationSetupMenu
                         var c = 0;
                         while (true)
                         {
-                            Canvas.WriteFrameLine(1, 0, "Checking sudo permissions...", AnsiColor.Cornsilk1);
+                            Canvas.WriteFrameLine(1, 0, " Checking sudo permissions...", AnsiColor.Cornsilk1);
                             Canvas.WriteFrameLine(2, 0, "");
 
                             var result = client.RunCommand(@$"echo ""{password}"" | sudo -S bash -c ""echo jumper-sudo-auth-test""");
@@ -128,6 +128,8 @@ public class LocationSetupMenu
                                     : result.Result.Split('\n').LastOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "Invalid password"
                                 : result.Error.Split('\n').LastOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "Invalid password";
 
+                            Canvas.WriteFrameLine(1, 0, "");
+                            
                             if (c == 0)
                             {
                                 Canvas.WriteFrame(1, 0, " Sudo password: ");
