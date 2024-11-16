@@ -27,11 +27,9 @@ rm -f "ppa-private-key.asc"
 
 for DIST in "/tmp/JumpPPA/dists"/*; do
     if [ -d "$DIST" ]; then
-        cd "$DIST/main"
-        # Generate Packages files and compress them
-        for ARCH_DIR in */binary-*; do
-            [ -d "$ARCH_DIR" ] && dpkg-scanpackages --multiversion ../../../pool/main > "$ARCH_DIR/Packages" && gzip -k -f "$ARCH_DIR/Packages"
-        done
+        cd "$DIST/main/binary-amd64"
+        
+        dpkg-scanpackages --multiversion ../../../../pool/main > Packages && gzip -k -f "Packages"
 
         # Generate Release, Release.gpg, and InRelease files
         apt-ftparchive release . > Release
