@@ -121,15 +121,17 @@ public class LocationSetupMenu
                             string errorMessage = "";
                             while (true)
                             {
+                                Canvas.WriteFrameLine(1, 0, "");
+                                Canvas.WriteFrameLine(2, 0, "");
+                                
                                 if (c == 0)
                                 {
-                                    Canvas.WriteFrameLine(1, 0, " Sudo password: ");
-                                    Canvas.WriteFrameLine(2, 0, "");
+                                    Canvas.WriteFrame(1, 0, " Sudo password: ");
                                 }
                                 else
                                 {
                                     Canvas.WriteFrameLine(1, 0, $" {Truncate(errorMessage, 40)} ", AnsiColor.Red);
-                                    Canvas.WriteFrameLine(2, 0, " Sudo password: ");
+                                    Canvas.WriteFrame(2, 0, " Sudo password: ");
                                 }
 
                                 if (c >= 3)
@@ -137,7 +139,7 @@ public class LocationSetupMenu
                                 
                                 c++;
 
-                                password = ReadPassword(true);
+                                password = ReadPassword(" Sudo password: ", true);
                                 TerminalCommands.Execute(TerminalCommand.HideCursor);
                                 if (password == null)
                                 {
@@ -173,7 +175,7 @@ public class LocationSetupMenu
                         if (password == null)
                         {
                             Canvas.WriteFrame(1, 0, " Enter password: ");
-                            password = ReadPassword(true);
+                            password = ReadPassword(" Enter password: ", true);
                             TerminalCommands.Execute(TerminalCommand.HideCursor);
                             if (password == null)
                             {
@@ -197,7 +199,7 @@ public class LocationSetupMenu
                         {
                             Canvas.WriteFrame(1, 0, $" {Truncate(e.Message, 40)} ", AnsiColor.Red);
                             Canvas.WriteFrame(2, 0, " Enter password: ");
-                            password = ReadPassword(false);
+                            password = ReadPassword(" Enter password: ", false);
                             TerminalCommands.Execute(TerminalCommand.HideCursor);
                             if (password == null)
                             {
@@ -409,7 +411,7 @@ public class LocationSetupMenu
     private static bool SavePrompt(bool canceled) =>
         Canvas.OptionPrompt("Save", canceled ? "Setup canceled. Save the entry anyways?" : "Setup failed. Save the entry anyways?", "Save", "Discard");
 
-    private static string? ReadPassword(bool firstRun)
+    private static string? ReadPassword(string passwordString, bool firstRun)
     {
         var complete = new ManualResetEventSlim();
         string password = "";
@@ -437,7 +439,6 @@ public class LocationSetupMenu
 
         TerminalCommands.Execute(TerminalCommand.ShowCursor);
 
-
         ConsoleKeyInfo keyInfo;
         while ((keyInfo = Console.ReadKey(true)).Key != ConsoleKey.Enter)
         {
@@ -445,9 +446,9 @@ public class LocationSetupMenu
             {
                 if (keyInfo.Key == ConsoleKey.Backspace && password.Length > 0)
                 {
-                    Canvas.WriteFrame(firstRun ? 1 : 2, " Enter password: ".Length + password.Length - 1, " ");
+                    Canvas.WriteFrame(firstRun ? 1 : 2, passwordString.Length + password.Length - 1, " ");
                     password = password.Substring(0, password.Length - 1);
-                    Canvas.WriteFrame(firstRun ? 1 : 2, " Enter password: ".Length + password.Length - 1, password.Length > 0 ? "*" : " ");
+                    Canvas.WriteFrame(firstRun ? 1 : 2, passwordString.Length + password.Length - 1, password.Length > 0 ? "*" : " ");
                     continue;
                 }
 
@@ -459,10 +460,10 @@ public class LocationSetupMenu
                 if (char.IsControl(keyInfo.KeyChar))
                     continue;
 
-                if (password.Length >= Canvas.Frame.FrameWidth - " Enter password: ".Length - 4)
+                if (password.Length >= Canvas.Frame.FrameWidth - passwordString.Length - 4)
                     continue;
 
-                Canvas.WriteFrame(firstRun ? 1 : 2, " Enter password: ".Length + password.Length, "*");
+                Canvas.WriteFrame(firstRun ? 1 : 2, passwordString.Length + password.Length, "*");
                 password += keyInfo.KeyChar;
             }
         }
