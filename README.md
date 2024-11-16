@@ -7,13 +7,13 @@
 
 ---
 
-This project provides a secure SSH frontend for Debian and RedHat-based systems. Jumper automates creating a secure jump environment, along with managing jump targets and importing keys—all wrapped in a clean terminal interface.
+This project provides a secure SSH frontend for Debian and Red Hat-based systems. Jumper automates creating a secure jump environment, along with managing jump targets and importing keys—all wrapped in a clean terminal interface.
 
 ## Deployment
 
 **Prerequisites**
 
-- Debian or RedHat-based Linux system
+- Debian or Red Hat-based Linux system
 - OpenSSH Client (`ssh`) and OpenSSH Server (`sshd`)
 
 ### Ubuntu/Debian
@@ -36,7 +36,7 @@ curl -sL https://github.com/Ameliorated-LLC/jumper/releases/latest/download/jump
 
 ### RHEL/Fedora
 
-For RedHat-based systems, see the following installation methods:
+For Red Hat-based systems, see the following installation methods:
 
 #### RPM Package
 
