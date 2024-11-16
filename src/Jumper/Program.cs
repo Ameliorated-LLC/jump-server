@@ -41,6 +41,7 @@ public class Program
         return geteuid() == 0;
     }
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(RunOptions))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ChangePasswordOptions))]
     private static void HandleArguments(string[] args)
     {
         if (args.Length == 0)
