@@ -24,9 +24,10 @@ public class Program
         public string Username { get; set; } = string.Empty;
     }
     
+    [Verb("run", HelpText = "Run jumper normally.")]
     public class Options
     {
-        [Option("restrict-admin", Required = false, Default = false, HelpText = "Prevents access to admin menu even with password.")]
+        [Option("--restrict-admin", Required = false, Default = false, HelpText = "Prevents access to admin menu even with password.")]
         public bool RestrictAdminAccess { get; set; } = false;
     }
 
@@ -42,6 +43,12 @@ public class Program
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Options))]
     private static void HandleArguments(string[] args)
     {
+        if (args.Length == 0)
+        {
+            Start(new Options());
+            return;
+        }
+        
         var parser = new Parser(with => with.HelpWriter = null);
         var parserResult = parser.ParseArguments<ChangePasswordOptions, Options>(args);
         var helpText = HelpText.AutoBuild(parserResult, h =>
