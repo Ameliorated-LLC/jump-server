@@ -37,7 +37,7 @@ public class JumpMenu
             for (var i = 0; i < _options.Count; i++)
             {
                 _options[i].Location.PropertyChanged += LocationOnPropertyChanged!;
-                Canvas.WriteFrameLine(i, 0, $"   {Truncate(_options[i].Location.Name, 35 - Math.Min(_options[i].Location.Username.Length, 30))} ({Truncate(_options[i].Location.Username, 30)})", AnsiColor.Cornsilk1);
+                Canvas.WriteFrameLine(i, 0, $"   {Truncate(_options[i].Location.Name, 25 - Math.Min(_options[i].Location.Username.Length, 20))} ({Truncate(_options[i].Location.Username, 20)})", AnsiColor.Cornsilk1);
                 Canvas.WriteFrame(i, -10,
                     (_options[i].Location.Connected == true ? (PingTo4CharText(_options[i].Location.Ping) + "ms ").ToColored(AnsiColor.Grey93) : "   0ms ".ToColored(AnsiColor.Grey23)) +
                     "• ".ToColored(_options[i].Location.Connected == null ? AnsiColor.Grey23 : _options[i].Location.Connected!.Value ? AnsiColor.Green : AnsiColor.Red));
@@ -188,12 +188,12 @@ public class JumpMenu
         lock (_writeLock)
         {
             _options[index].Selected = false;
-            Canvas.WriteFrameLine(index, 0, $"   {Truncate(_options[index].Location.Name, 35 - Math.Min(_options[index].Location.Username.Length, 30))} ({Truncate(_options[index].Location.Username, 30)})", AnsiColor.Cornsilk1);
+            Canvas.WriteFrameLine(index, 0, $"   {Truncate(_options[index].Location.Name, 25 - Math.Min(_options[index].Location.Username.Length, 20))} ({Truncate(_options[index].Location.Username, 20)})", AnsiColor.Cornsilk1);
             Canvas.WriteFrame(index, -10, 
                 (_options[index].Location.Connected == true ? (PingTo4CharText(_options[index].Location.Ping) + "ms ").ToColored(AnsiColor.Grey93)  : "   0ms ".ToColored(AnsiColor.Grey23)) + "• ".ToColored(_options[index].Location.Connected == null ? AnsiColor.Grey23 : _options[index].Location.Connected!.Value ? AnsiColor.Green : AnsiColor.Red));
             index = newIndex;
             _options[index].Selected = true;
-            Canvas.WriteFrameLine(index, 0, $" > {Truncate(_options[index].Location.Name, 35 - Math.Min(_options[index].Location.Username.Length, 30))} ({Truncate(_options[index].Location.Username, 30)})", AnsiColor.Black, AnsiColor.Grey93);
+            Canvas.WriteFrameLine(index, 0, $" > {Truncate(_options[index].Location.Name, 25 - Math.Min(_options[index].Location.Username.Length, 20))} ({Truncate(_options[index].Location.Username, 20)})", AnsiColor.Black, AnsiColor.Grey93);
             Canvas.WriteFrame(index, -10, 
                 (_options[index].Location.Connected == true ? (PingTo4CharText(_options[index].Location.Ping) + "ms ").ToColored(AnsiColor.Black)  : "   0ms ".ToColored(AnsiColor.Grey23)) + "• ".ToColored(_options[index].Location.Connected == null ? AnsiColor.Grey23 : _options[index].Location.Connected!.Value ? AnsiColor.Green : AnsiColor.Red),
                 null, AnsiColor.Grey93);
