@@ -32,6 +32,7 @@ for DIST in "/tmp/JumpPPA/dists"/*; do
         dpkg-scanpackages --multiversion ../../../../pool/main > Packages && gzip -k -f "Packages"
 
         cd ..
+        cd ..
 
         # Generate Release, Release.gpg, and InRelease files
         apt-ftparchive release . > Release
