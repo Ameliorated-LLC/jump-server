@@ -17,10 +17,10 @@ public class Program
     public static readonly string Version = Assembly.GetExecutingAssembly().GetName().Version!.Major + "." + Assembly.GetExecutingAssembly().GetName().Version!.Minor + "." + Assembly.GetExecutingAssembly().GetName().Version!.Build;
     public static bool Authenticated = false;
 
-    [Verb("change-password", HelpText = "Change jumper admin password for an already setup jumper chroot user. (Note: the default username is 'jump')")]
+    [Verb("change-password", HelpText = "Change jumper admin password for an already setup jumper chroot user.")]
     public class ChangePasswordOptions
     {
-        [Value(0, MetaName = "username", HelpText = "Username of jumper chroot user.", Required = true)]
+        [Value(0, MetaName = "username", HelpText = "Username of jumper chroot user. (Note: the default jumper username is 'jump')", Required = true)]
         public string Username { get; set; } = string.Empty;
     }
     
@@ -49,8 +49,8 @@ public class Program
             return;
         }
         
-        var parser = new Parser(with => with.HelpWriter = null);
-        var parserResult = parser.ParseArguments<ChangePasswordOptions, RunOptions>(args);
+        var parser = new Parser();
+        var parserResult = parser.ParseArguments<RunOptions, ChangePasswordOptions>(args);
         var helpText = HelpText.AutoBuild(parserResult, h =>
         {
             h.Heading = "jumper v" + Version;
@@ -67,7 +67,10 @@ public class Program
                 }
                 Console.WriteLine();
             }
-            Console.WriteLine(helpText.ToString());
+            if (parserResult.Errors.Any(x => x.Tag == ErrorType.VersionRequestedError))
+                Console.WriteLine("jumper v" + Version + Environment.NewLine + "MIT License");
+            else
+                Console.WriteLine(helpText.ToString());
             
             return;
         }
