@@ -18,20 +18,20 @@ public class Program
     public static bool Authenticated = false;
 
     [Verb("change-password", HelpText = "Change jumper admin password for an already setup jumper chroot user. (Note: the default username is 'jump')")]
-    class ChangePasswordOptions
+    public class ChangePasswordOptions
     {
         [Value(0, MetaName = "username", HelpText = "Username of jumper chroot user.", Required = true)]
         public string Username { get; set; } = string.Empty;
     }
     
     [Verb("run", HelpText = "Run jumper normally.")]
-    public class Options
+    public class RunOptions
     {
         [Option("--restrict-admin", Required = false, Default = false, HelpText = "Prevents access to admin menu even with password.")]
         public bool RestrictAdminAccess { get; set; } = false;
     }
 
-    public static Options CommandLineOptions;
+    public static RunOptions CommandLineOptions;
 
     [DllImport("libc")]
     private static extern uint geteuid();
@@ -40,17 +40,17 @@ public class Program
     {
         return geteuid() == 0;
     }
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Options))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(RunOptions))]
     private static void HandleArguments(string[] args)
     {
         if (args.Length == 0)
         {
-            Start(new Options());
+            Start(new RunOptions());
             return;
         }
         
         var parser = new Parser(with => with.HelpWriter = null);
-        var parserResult = parser.ParseArguments<ChangePasswordOptions, Options>(args);
+        var parserResult = parser.ParseArguments<ChangePasswordOptions, RunOptions>(args);
         var helpText = HelpText.AutoBuild(parserResult, h =>
         {
             h.Heading = "jumper v" + Version;
@@ -63,7 +63,7 @@ public class Program
             {
                 foreach (var parserResultError in parserResult.Errors)
                 {
-                    Console.WriteLine(parserResultError);
+                    Console.WriteLine(parserResultError.ToString());
                 }
                 Console.WriteLine();
             }
@@ -123,13 +123,13 @@ public class Program
             {
                 Console.WriteLine(e.Message);
             }
-        } else if (parserResult.Value is Options options)
+        } else if (parserResult.Value is RunOptions options)
         {
             Start(options);
         }
     }
     
-    static void Start(Options options)
+    static void Start(RunOptions options)
     {
         CommandLineOptions = options;
         
