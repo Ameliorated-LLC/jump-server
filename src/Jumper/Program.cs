@@ -50,13 +50,8 @@ public class Program
             return;
         }
         
-        var parser = new Parser();
-        var parserResult = parser.ParseArguments<RunOptions, ChangePasswordOptions>(args);
-        var helpText = HelpText.AutoBuild(parserResult, h =>
-        {
-            h.Heading = "jumper v" + Version;
-            return h;
-        }, e => e);
+        var parser = new Parser(with => with.HelpWriter = null);
+        var parserResult = parser.ParseArguments<ChangePasswordOptions, RunOptions>(args);
         if (parserResult.Tag == ParserResultType.NotParsed)
         {
             if (parserResult.Errors.Any() && !parserResult.Errors.Any(x =>
@@ -71,7 +66,23 @@ public class Program
             if (parserResult.Errors.Any(x => x.Tag == ErrorType.VersionRequestedError))
                 Console.WriteLine("jumper v" + Version + Environment.NewLine + "MIT License");
             else
-                Console.WriteLine(helpText.ToString());
+                Console.WriteLine(@"
+jumper v0.2.0
+MIT License
+
+Usage:
+  jumper [command] [options]
+
+Commands:
+  change-password <username>   Change jumper admin password for an already setup jumper chroot user.
+
+  run                          Run jumper normally.
+    --restrict-admin           Prevents access to admin menu even with password. (Default: false)
+
+Options:
+  --help                       Display this help screen.
+  --version                    Display version information.
+");
             
             return;
         }
