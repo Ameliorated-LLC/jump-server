@@ -29,7 +29,7 @@ for DIST in "/tmp/JumpPPA/dists"/*; do
     if [ -d "$DIST" ]; then
         DIST_FOLDER=$(basename "$DIST")
 
-        apt-ftparchive package pool/ > "dists/$DIST_FOLDER/main/binary-amd64/Packages"
+        apt-ftparchive packages pool/ > "dists/$DIST_FOLDER/main/binary-amd64/Packages"
         gzip -k -f "dists/$DIST_FOLDER/main/binary-amd64/Packages" > "dists/$DIST_FOLDER/main/binary-amd64/Packages.gz"
 
         # Generate Release, Release.gpg, and InRelease files
