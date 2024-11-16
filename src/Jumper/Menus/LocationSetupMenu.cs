@@ -109,12 +109,10 @@ public class LocationSetupMenu
                         client.Connect();
 
                         Canvas.WriteFrameLine(0, 1, $"Connected to '{location.Username}@{location.IP}'", AnsiColor.Cornsilk1);
-                        
-                        if (!disablePasswordAuth && !requireTOTP && !randomizeSSHPort)
-                            break;
 
                         var c = 0;
-                        while (true)
+                        // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
+                        while (!disablePasswordAuth && !requireTOTP && !randomizeSSHPort)
                         {
                             Canvas.WriteFrameLine(1, 0, " Checking sudo permissions...", AnsiColor.Cornsilk1);
                             Canvas.WriteFrameLine(2, 0, "");
@@ -348,12 +346,14 @@ public class LocationSetupMenu
                     {
                         Canvas.WriteFrame(y, 0, $" {Truncate(e.Message, 40)} ", AnsiColor.Red);
                         Canvas.WriteFrame(height - 4, 1, $"Press any key to cancel setup...", AnsiColor.Grey93);
+                        while (Console.KeyAvailable) Console.ReadKey(true);
                         Console.ReadKey(true);
                     }
 
                     Canvas.WriteFrameLine(y, 1, $"Entry setup complete", AnsiColor.Green3);
 
                     Canvas.WriteFrameLine(y + 2, 1, $"Press any key to return to menu...", AnsiColor.Grey93);
+                    while (Console.KeyAvailable) Console.ReadKey(true);
                     Console.ReadKey(true);
                     break;
                 }
@@ -363,6 +363,8 @@ public class LocationSetupMenu
         {
             Canvas.WriteFrame(y, 0, $" {Truncate(e.Message, 40)} ", AnsiColor.Red);
             Canvas.WriteFrame(height - 4, 1, $"Press any key to cancel setup...", AnsiColor.Grey93);
+            
+            while (Console.KeyAvailable) Console.ReadKey(true);
             Console.ReadKey(true);
             if (SavePrompt(false))
             {
