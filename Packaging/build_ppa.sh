@@ -26,11 +26,11 @@ gpg --import "ppa-private-key.asc"
 
 rm -f "ppa-private-key.asc"
 
-apt-ftparchive package pool/ > "Packages"
+apt-ftparchive packages pool/ > "Packages"
 gzip -k -f "Packages" > "Packages.gz"
 
 # Generate Release, Release.gpg, and InRelease files
-apt-ftparchive release "-c=dists/$DIST_FOLDER/aptftp.conf" . > "Release"
+apt-ftparchive release "-c=aptftp.conf" . > "Release"
 gpg --local-user "styris_packaging@fastmail.com" -abs -o - "Release" > "Release.gpg"
 gpg --local-user "styris_packaging@fastmail.com" --clearsign -o - "Release" > "InRelease"
 
