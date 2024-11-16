@@ -242,7 +242,7 @@ public class LocationSetupMenu
 
                         var keyText = File.ReadAllText("/jumper-ed25519.pub");
                         var result = client.RunCommand(
-                            $"grep -qxF \"{keyText.Trim()}\" ~/.ssh/authorized_keys || echo \"{Environment.NewLine + keyText}\" >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys");
+                            $"grep -qF \"{keyText.Trim()}\" ~/.ssh/authorized_keys || echo \"{Environment.NewLine + keyText}\" >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys");
                         if (result.ExitStatus != 0)
                             Canvas.WriteFrameLine(1, 1, $"Failed to copy public key", AnsiColor.Yellow);
                         else
@@ -263,7 +263,7 @@ public class LocationSetupMenu
                         if (!sudoFailed)
                         {
                             var result = client.RunCommand(
-                                @$"grep -q '^PasswordAuthentication no' /etc/ssh/sshd_config || echo ""{password}"" | sudo -S bash -c ""((grep -q '^PasswordAuthentication .*' /etc/ssh/sshd_config && sed -i 's/^PasswordAuthentication .*$/\# PasswordAuthentication no/' /etc/ssh/sshd_config) & sed -i '1i PasswordAuthentication no\n' /etc/ssh/sshd_config) && exit 117""");
+                                @$"grep -q '^PasswordAuthentication no' /etc/ssh/sshd_config || (echo ""{password}"" | sudo -S bash -c ""((grep -q '^PasswordAuthentication .*' /etc/ssh/sshd_config && sed -i 's/^PasswordAuthentication \(.*\)$/\#PasswordAuthentication \1/' /etc/ssh/sshd_config); sed -i '1i PasswordAuthentication no' /etc/ssh/sshd_config) && exit 117"")");
                             if (result.ExitStatus != 0 && result.ExitStatus != 117)
                             {
                                 Canvas.WriteFrameLine(y - 1, 1, $"Failed to disable password auth", AnsiColor.Yellow);
@@ -304,7 +304,7 @@ public class LocationSetupMenu
                         if (!sudoFailed)
                         {
                             var result = client.RunCommand(
-                                @$"grep -q '^Port {port}' /etc/ssh/sshd_config || echo ""{password}"" | sudo -S bash -c ""((grep -q '^Port .*' /etc/ssh/sshd_config && sed -i 's/^Port .*$/\# Port 22/' /etc/ssh/sshd_config) & sed -i '1i Port {port}\n' /etc/ssh/sshd_config) && exit 117""");
+                                @$"grep -q '^Port {port}' /etc/ssh/sshd_config || (echo ""{password}"" | sudo -S bash -c ""((grep -q '^Port .*' /etc/ssh/sshd_config && sed -i 's/^Port \(.*\)$/\#Port \1/' /etc/ssh/sshd_config); sed -i '1i Port {port}' /etc/ssh/sshd_config) && exit 117"")");
                             if (result.ExitStatus != 0 && result.ExitStatus != 117)
                                 Canvas.WriteFrameLine(y - 1, 1, $"Failed randomize SSH port", AnsiColor.Yellow);
                             else
