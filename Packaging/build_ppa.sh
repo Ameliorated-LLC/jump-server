@@ -15,12 +15,6 @@ rm -rf "/tmp/JumpPPA"
 cp -rf "$SCRIPT_DIR/PPA" "/tmp/JumpPPA"
 
 cd /tmp/JumpPPA
-# Generate Packages file and compress it
-dpkg-scanpackages --multiversion . > Packages
-gzip -k -f Packages
-
-# Generate Release file
-apt-ftparchive release . > Release
 
 gpg "ppa-private-key.asc.gpg"
 
@@ -30,8 +24,19 @@ gpg --import "ppa-private-key.asc"
 
 rm -f "ppa-private-key.asc"
 
-gpg --local-user "styris_packaging@fastmail.com" -abs -o - Release > Release.gpg
-gpg --local-user "styris_packaging@fastmail.com" --clearsign -o - Release > InRelease
+for DIST in "/tmp/JumpPPA"/*; do
+    if [ -d "$DIST" ]; then
+        # Generate Packages files and compress them
+        for ARCH_DIR in */binary-*; do
+            [ -d "$ARCH_DIR" ] && dpkg-scanpackages --multiversion ../../../pool/main > "$ARCH_DIR/Packages" && gzip -k -f "$ARCH_DIR/Packages"
+        done
+
+        # Generate Release, Release.gpg, and InRelease files
+        apt-ftparchive release . > Release
+        gpg --local-user "styris_packaging@fastmail.com" -abs -o - Release > Release.gpg
+        gpg --local-user "styris_packaging@fastmail.com" --clearsign -o - Release > InRelease
+    fi
+done
 
 rm -rf "$GNUPGHOME"
 

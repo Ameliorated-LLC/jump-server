@@ -13,7 +13,7 @@ public class AddEntryMenu
         new Option() { Type = OptionType.TextInputField, Name = "IP Address", Regex = @"^(?!.*\.\.)[A-Za-z0-9.-]+$", MinLength = 1 },
         new Option() { Type = OptionType.NumberInputField, Name = "SSH Port", Value = "22", MaxLength = 5, MinLength = 1 },
         new Option() { Type = OptionType.ToggleButton, Name = "Import SSH Public Key", Toggled = true },
-        new Option() { Type = OptionType.ToggleButton, Name = "Disable Password Auth", Toggled = true },
+        new Option() { Type = OptionType.ToggleButton, Name = "Disable Password Auth", Toggled = false },
         new Option() { Type = OptionType.ToggleButton, Name = "Randomize Remote SSH Port", Toggled = false },
         //new Option() { Type = OptionType.ToggleButton, Name = "Require TOTP 2FA Auth", Toggled = false},
 
