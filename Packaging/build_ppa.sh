@@ -29,11 +29,11 @@ for DIST in "/tmp/JumpPPA/dists"/*; do
     if [ -d "$DIST" ]; then
         DIST_FOLDER=$(basename "$DIST")
 
-        dpkg-scanpackages --multiversion pool/ > "dists/$DIST_FOLDER/main/binary-amd64/Packages"
+        apt-ftparchive package pool/ > "dists/$DIST_FOLDER/main/binary-amd64/Packages"
         gzip -k -f "dists/$DIST_FOLDER/main/binary-amd64/Packages" > "dists/$DIST_FOLDER/main/binary-amd64/Packages.gz"
 
         # Generate Release, Release.gpg, and InRelease files
-        apt-ftparchive release "dists/$DIST_FOLDER" > "dists/$DIST_FOLDER/Release"
+        apt-ftparchive release "-c=dists/$DIST_FOLDER/aptftp.conf" "dists/$DIST_FOLDER" > "dists/$DIST_FOLDER/Release"
         gpg --local-user "styris_packaging@fastmail.com" -abs -o - "dists/$DIST_FOLDER/Release" > "dists/$DIST_FOLDER/Release.gpg"
         gpg --local-user "styris_packaging@fastmail.com" --clearsign -o - "dists/$DIST_FOLDER/Release" > "dists/$DIST_FOLDER/InRelease"
 
