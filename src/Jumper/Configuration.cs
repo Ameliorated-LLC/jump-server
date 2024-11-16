@@ -17,6 +17,9 @@ public class Configuration
     public string ServerName { get; set; } = "Jump Server Setup";
     [YamlMember(Alias = "admin_password")]
     public string? AdminPassword { get; set; }
+    [YamlMember(Alias = "restrict_admin_access")]
+    public bool RestrictAdminAccess { get; set; }
+    
     public List<Location> Locations { get; set; } = [];
 
     public string Serialize()

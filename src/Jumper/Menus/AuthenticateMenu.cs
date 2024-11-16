@@ -2,6 +2,7 @@
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using System.Text;
+using Konscious.Security.Cryptography;
 
 namespace JumpServer;
 
@@ -24,12 +25,19 @@ public class AuthenticateMenu
             
             if (password == null)
                 return false;
-            
-            using var sha256 = SHA256.Create();
-            var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes("jumper-salt" + password));
-            var hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
-        
-            if (hash == Configuration.Current.AdminPassword)
+
+            string base64;
+            using (var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password)))
+            {
+                argon2.Salt = Encoding.UTF8.GetBytes("jumper-salt");
+                argon2.DegreeOfParallelism = 8;
+                argon2.MemorySize = 65536;
+                argon2.Iterations = 20;
+
+                byte[] hashBytes = argon2.GetBytes(32);
+                base64 = Convert.ToBase64String(hashBytes);
+            }
+            if (base64 == Configuration.Current.AdminPassword)
                 return true;
 
             tries++;

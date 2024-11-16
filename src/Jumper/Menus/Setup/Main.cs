@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using Konscious.Security.Cryptography;
 using Renci.SshNet.Security;
 using SshNet.Keygen;
 using SshNet.Keygen.Extensions;
@@ -123,15 +124,23 @@ public static class SetupMain
 
             if (adminPassword != "")
             {
-                using var sha256 = SHA256.Create();
-                var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes("jumper-salt" + adminPassword));
-                adminPassword = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+                using (var argon2 = new Argon2id(Encoding.UTF8.GetBytes(adminPassword)))
+                {
+                    argon2.Salt = Encoding.UTF8.GetBytes("jumper-salt");
+                    argon2.DegreeOfParallelism = 8;
+                    argon2.MemorySize = 65536;
+                    argon2.Iterations = 20;
+
+                    byte[] hashBytes = argon2.GetBytes(32);
+                    adminPassword = Convert.ToBase64String(hashBytes);
+                }
             }
             
             File.WriteAllText($"/home/{username}/chroot/etc/jumper/config.yml", new Configuration()
             {
                 ServerName = name,
-                AdminPassword = adminPassword
+                AdminPassword = string.IsNullOrWhiteSpace(adminPassword) ? null : adminPassword,
+                RestrictAdminAccess = Program.CommandLineOptions.RestrictAdminAccess,
             }.Serialize());
             if (ExecuteCommand("chmod", [ "-R", "0777", $"/home/{username}/chroot/etc/jumper" ]).ExitCode != 0)
                 throw new Exception("Failed to set ownership.");

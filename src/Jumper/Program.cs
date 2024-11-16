@@ -2,9 +2,11 @@
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using CommandLine;
 using CommandLine.Text;
 using JumpServer.Menus;
+using Konscious.Security.Cryptography;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -15,9 +17,16 @@ public class Program
     public static readonly string Version = Assembly.GetExecutingAssembly().GetName().Version!.Major + "." + Assembly.GetExecutingAssembly().GetName().Version!.Minor + "." + Assembly.GetExecutingAssembly().GetName().Version!.Build;
     public static bool Authenticated = false;
 
+    [Verb("change-password", HelpText = "Change jumper admin password for an already setup jumper chroot user. (Note: the default username is 'jump')")]
+    class ChangePasswordOptions
+    {
+        [Value(0, MetaName = "username", HelpText = "Username of jumper chroot user.", Required = true)]
+        public string Username { get; set; } = string.Empty;
+    }
+    
     public class Options
     {
-        [Option("restrict-admin", Required = false, HelpText = "Prevents access to admin menu even with password.")]
+        [Option("restrict-admin", Required = false, Default = false, HelpText = "Prevents access to admin menu even with password.")]
         public bool RestrictAdminAccess { get; set; } = false;
     }
 
@@ -34,7 +43,7 @@ public class Program
     private static void HandleArguments(string[] args)
     {
         var parser = new Parser(with => with.HelpWriter = null);
-        var parserResult = parser.ParseArguments<Options>(args);
+        var parserResult = parser.ParseArguments<ChangePasswordOptions, Options>(args);
         var helpText = HelpText.AutoBuild(parserResult, h =>
         {
             h.Heading = "jumper v" + Version;
@@ -55,12 +64,68 @@ public class Program
             
             return;
         }
-        Start(parserResult.Value);
+
+        if (parserResult.Value is ChangePasswordOptions changePasswordOptions)
+        {
+            try
+            {
+                if (!Directory.Exists("/etc/jumper") || !Directory.GetFiles("/etc/jumper").Any())
+                {
+                    Console.WriteLine("Jumper has not been configured with a user yet.");
+                    Environment.Exit(1);
+                    return;
+                }
+
+                var file = Directory.GetFiles("/etc/jumper").FirstOrDefault(file => Path.GetFileName(file).Split('.').FirstOrDefault()?.StartsWith(changePasswordOptions.Username) ?? false);
+                if (file == null) {
+                    Console.WriteLine($"No jumper configuration found for {changePasswordOptions.Username}.");
+                    Environment.Exit(1);
+                    return;
+                }
+                
+                var yaml = File.ReadAllText(file);
+                var configuration = Configuration.Deserialize(yaml);
+
+                string? base64;
+                
+                Console.Write("Enter new password: ");
+                var password = ReadPassword();
+                Console.WriteLine();
+                if (string.IsNullOrWhiteSpace(password))
+                    base64 = null;
+                else
+                {
+                    using (var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password)))
+                    {
+                        argon2.Salt = Encoding.UTF8.GetBytes("jumper-salt");
+                        argon2.DegreeOfParallelism = 8;
+                        argon2.MemorySize = 65536;
+                        argon2.Iterations = 20;
+
+                        byte[] hashBytes = argon2.GetBytes(32);
+                        base64 = Convert.ToBase64String(hashBytes);
+                    }
+                }
+                
+                configuration.AdminPassword = base64;
+                
+                File.WriteAllText(file, Configuration.Current.Serialize());
+                Console.WriteLine(Environment.NewLine + "Password changed successfully.".ToColored(AnsiColor.Green3));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        } else if (parserResult.Value is Options options)
+        {
+            Start(options);
+        }
     }
     
     static void Start(Options options)
     {
         CommandLineOptions = options;
+        
         if (!File.Exists("/etc/jumper/config.yml") && !IsRunningWithSudo())
         {
             Console.WriteLine("sudo privileges are required for first time setup.");
@@ -176,4 +241,30 @@ public class Program
 
     private static object _exitLock = new object();
     private static volatile bool _exitTriggered = false;
+    
+    private static string ReadPassword()
+    {
+        string password = "";
+
+        ConsoleKeyInfo keyInfo;
+        while ((keyInfo = Console.ReadKey(true)).Key != ConsoleKey.Enter)
+        {
+            if (keyInfo.Key == ConsoleKey.Backspace && password.Length > 0)
+            {
+                Console.Write("\b \b");
+                password = password.Substring(0, password.Length - 1);
+                continue;
+            }
+
+            if (keyInfo.Key == ConsoleKey.Enter)
+                break;
+            if (char.IsControl(keyInfo.KeyChar))
+                continue;
+
+            Console.Write("*");
+            password += keyInfo.KeyChar;
+        }
+
+        return password;
+    }
 }
