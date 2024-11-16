@@ -112,7 +112,7 @@ public class LocationSetupMenu
 
                         var c = 0;
                         // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-                        while (!disablePasswordAuth && !requireTOTP && !randomizeSSHPort)
+                        while (disablePasswordAuth || requireTOTP || randomizeSSHPort)
                         {
                             Canvas.WriteFrameLine(1, 0, " Checking sudo permissions...", AnsiColor.Cornsilk1);
                             Canvas.WriteFrameLine(2, 0, "");
@@ -227,8 +227,6 @@ public class LocationSetupMenu
                         !(hostnameResult.Result.Trim().Contains('\n') || hostnameResult.Result.Length > 22))
                         location.Name = hostnameResult.Result.Trim();
                     Thread.Sleep(random.Next(250, 500));
-
-
 
                     if (importKey)
                     {
