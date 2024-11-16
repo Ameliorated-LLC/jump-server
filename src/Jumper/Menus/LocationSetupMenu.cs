@@ -121,9 +121,6 @@ public class LocationSetupMenu
                             string errorMessage = "";
                             while (true)
                             {
-                                Canvas.WriteFrameLine(1, 0, "");
-                                Canvas.WriteFrameLine(2, 0, "");
-                                
                                 if (c == 0)
                                 {
                                     Canvas.WriteFrame(1, 0, " Sudo password: ");
@@ -158,6 +155,9 @@ public class LocationSetupMenu
 
                                     return;
                                 }
+                                
+                                Canvas.WriteFrameLine(1, 0, "");
+                                Canvas.WriteFrameLine(2, 0, "");
                                 
                                 var result = client.RunCommand(@$"echo ""{password}"" | sudo -S bash -c ""echo jumper-sudo-auth-test""");
                                 if (result.Result.Contains("jumper-sudo-auth-test"))
