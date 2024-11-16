@@ -119,6 +119,9 @@ public class LocationSetupMenu
                             Canvas.WriteFrameLine(1, 0, " Checking sudo permissions...", AnsiColor.Cornsilk1);
                             Canvas.WriteFrameLine(2, 0, "");
 
+                            if (c >= 3)
+                                Thread.Sleep(5000);
+                            
                             var result = client.RunCommand(@$"echo ""{password}"" | sudo -S bash -c ""echo jumper-sudo-auth-test""");
                             if (result.Result.Contains("jumper-sudo-auth-test"))
                                 break;
@@ -139,9 +142,6 @@ public class LocationSetupMenu
                                 Canvas.WriteFrameLine(1, 0, $" {Truncate(errorMessage, 40)} ", AnsiColor.Red);
                                 Canvas.WriteFrame(2, 0, " Sudo password: ");
                             }
-
-                            if (c >= 3)
-                                Thread.Sleep(5000);
 
                             c++;
 
