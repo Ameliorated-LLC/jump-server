@@ -109,64 +109,58 @@ public class LocationSetupMenu
                         client.Connect();
 
                         Canvas.WriteFrameLine(0, 1, $"Connected to '{location.Username}@{location.IP}'", AnsiColor.Cornsilk1);
-
+                        
                         if (!disablePasswordAuth && !requireTOTP && !randomizeSSHPort)
                             break;
-                        
-                        var sudoResult = client.RunCommand(@$"echo ""{password}"" | sudo -S bash -c ""echo jumper-sudo-auth-test""");
-                        
-                        if (password == null || !sudoResult.Result.Contains("jumper-sudo-auth-test"))
+
+                        var c = 0;
+                        while (true)
                         {
-                            var c = 0;
-                            string errorMessage = "";
-                            while (true)
+                            Canvas.WriteFrameLine(1, 0, "Checking sudo permissions...", AnsiColor.Cornsilk1);
+                            Canvas.WriteFrameLine(2, 0, "");
+
+                            var result = client.RunCommand(@$"echo ""{password}"" | sudo -S bash -c ""echo jumper-sudo-auth-test""");
+                            if (result.Result.Contains("jumper-sudo-auth-test"))
+                                break;
+                            string errorMessage = string.IsNullOrWhiteSpace(result.Error)
+                                ? string.IsNullOrWhiteSpace(result.Result)
+                                    ? $"Invalid password ({(result.ExitStatus?.ToString() ?? result.ExitSignal)})"
+                                    : result.Result.Split('\n').LastOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "Invalid password"
+                                : result.Error.Split('\n').LastOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "Invalid password";
+
+                            if (c == 0)
                             {
-                                if (c == 0)
-                                {
-                                    Canvas.WriteFrame(1, 0, " Sudo password: ");
-                                }
-                                else
-                                {
-                                    Canvas.WriteFrameLine(1, 0, $" {Truncate(errorMessage, 40)} ", AnsiColor.Red);
-                                    Canvas.WriteFrame(2, 0, " Sudo password: ");
-                                }
+                                Canvas.WriteFrame(1, 0, " Sudo password: ");
+                            }
+                            else
+                            {
+                                Canvas.WriteFrameLine(1, 0, $" {Truncate(errorMessage, 40)} ", AnsiColor.Red);
+                                Canvas.WriteFrame(2, 0, " Sudo password: ");
+                            }
 
-                                if (c >= 3)
-                                    Thread.Sleep(5000);
-                                
-                                c++;
+                            if (c >= 3)
+                                Thread.Sleep(5000);
 
-                                password = ReadPassword(" Sudo password: ", c == 1);
-                                TerminalCommands.Execute(TerminalCommand.HideCursor);
-                                if (password == null)
+                            c++;
+
+                            password = ReadPassword(" Sudo password: ", c == 1);
+                            TerminalCommands.Execute(TerminalCommand.HideCursor);
+                            if (password == null)
+                            {
+                                if (SavePrompt(true))
                                 {
-                                    if (SavePrompt(true))
+                                    try
                                     {
-                                        try
-                                        {
-                                            Configuration.Current.Locations.Add(location);
-                                            File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
-                                        }
-                                        catch
-                                        {
-                                            return;
-                                        }
+                                        Configuration.Current.Locations.Add(location);
+                                        File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
                                     }
-
-                                    return;
+                                    catch
+                                    {
+                                        return;
+                                    }
                                 }
-                                
-                                Canvas.WriteFrameLine(1, 0, "");
-                                Canvas.WriteFrameLine(2, 0, "");
-                                
-                                var result = client.RunCommand(@$"echo ""{password}"" | sudo -S bash -c ""echo jumper-sudo-auth-test""");
-                                if (result.Result.Contains("jumper-sudo-auth-test"))
-                                    break;
-                                errorMessage = string.IsNullOrWhiteSpace(result.Error)
-                                    ? string.IsNullOrWhiteSpace(result.Result)
-                                        ? $"Invalid password ({(result.ExitStatus?.ToString() ?? result.ExitSignal)})"
-                                        : result.Result.Split('\n').LastOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "Invalid password"
-                                    : result.Error.Split('\n').LastOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "Invalid password";
+
+                                return;
                             }
                         }
                     }
