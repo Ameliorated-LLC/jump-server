@@ -26,12 +26,14 @@ public class LocationSetupMenu
         Canvas.Set(new Frame("Entry Setup", height, 52,
             new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
             new DynamicBar() { Center = new Text("Press Ctrl + X to cancel setup", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }
-           ));
+        ));
 
         string? password = null;
 
         int y = 1;
         Canvas.WriteFrame(0, 1, $"Connecting to '{location.Username}@{location.IP}'...", AnsiColor.Cornsilk1);
+
+        bool sudoFailed = false;
         
         try
         {
@@ -41,7 +43,7 @@ public class LocationSetupMenu
                 Canvas.WriteFrameLine(2, 0, "");
                 var connectionInfo = new ConnectionInfo(location.IP, location.Port, location.Username, [
                     new PasswordAuthenticationMethod(location.Username, password ?? ""),
-                    new PrivateKeyAuthenticationMethod(location.Username, [new PrivateKeyFile("/jumper-ed25519.key") ]),
+                    new PrivateKeyAuthenticationMethod(location.Username, [new PrivateKeyFile("/jumper-ed25519.key")]),
                 ]);
                 using (var client = new SshClient(connectionInfo))
                 {
@@ -68,10 +70,10 @@ public class LocationSetupMenu
                                                 var saltBase64 = elements[2];
                                                 var hostHashBase64 = elements[3].Split(' ').First();
                                                 var keyBase64 = elements[3].Split(' ').Last();
-                                            
+
                                                 byte[] saltBytes = Convert.FromBase64String(saltBase64);
                                                 byte[] hostBytes = Encoding.UTF8.GetBytes(location.IP);
-                                            
+
                                                 byte[] hostHashBytes;
                                                 using (HMACSHA1 sha1 = new HMACSHA1(saltBytes))
                                                 {
@@ -89,6 +91,7 @@ public class LocationSetupMenu
                                         }
                                     }
                                 }
+
                                 writer.WriteLine($"|1|{info.Salt}|{info.HostHash} {e.HostKeyName} {info.Key}");
 
                                 File.WriteAllText("/etc/jumper/known_hosts", writer.ToString());
@@ -99,11 +102,71 @@ public class LocationSetupMenu
                             return;
                         }
                     };
-                    
+
                     Canvas.WriteFrame(0, 1, $"Connecting to '{location.Username}@{location.IP}'...", AnsiColor.Cornsilk1);
                     try
                     {
                         client.Connect();
+
+                        Canvas.WriteFrameLine(0, 1, $"Connected to '{location.Username}@{location.IP}'", AnsiColor.Cornsilk1);
+
+                        if (!disablePasswordAuth && !requireTOTP && !randomizeSSHPort)
+                            break;
+                        
+                        var sudoResult = client.RunCommand(@$"echo ""{password}"" | sudo -S bash -c ""echo jumper-sudo-auth-test""");
+                        
+                        if (password == null || !sudoResult.Result.Contains("jumper-sudo-auth-test"))
+                        {
+                            var c = 0;
+                            string errorMessage = "";
+                            while (true)
+                            {
+                                if (c == 0)
+                                {
+                                    Canvas.WriteFrameLine(1, 0, " Sudo password: ");
+                                    Canvas.WriteFrameLine(2, 0, "");
+                                }
+                                else
+                                {
+                                    Canvas.WriteFrameLine(1, 0, $" {Truncate(errorMessage, 40)} ", AnsiColor.Red);
+                                    Canvas.WriteFrameLine(2, 0, " Sudo password: ");
+                                }
+
+                                if (c >= 3)
+                                    Thread.Sleep(5000);
+                                
+                                c++;
+
+                                password = ReadPassword(true);
+                                TerminalCommands.Execute(TerminalCommand.HideCursor);
+                                if (password == null)
+                                {
+                                    if (SavePrompt(true))
+                                    {
+                                        try
+                                        {
+                                            Configuration.Current.Locations.Add(location);
+                                            File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
+                                        }
+                                        catch
+                                        {
+                                            return;
+                                        }
+                                    }
+
+                                    return;
+                                }
+                                
+                                var result = client.RunCommand(@$"echo ""{password}"" | sudo -S bash -c ""echo jumper-sudo-auth-test""");
+                                if (result.Result.Contains("jumper-sudo-auth-test"))
+                                    break;
+                                errorMessage = string.IsNullOrWhiteSpace(result.Error)
+                                    ? string.IsNullOrWhiteSpace(result.Result)
+                                        ? $"Invalid password ({(result.ExitStatus?.ToString() ?? result.ExitSignal)})"
+                                        : result.Result.Split('\n').LastOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "Invalid password"
+                                    : result.Error.Split('\n').LastOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "Invalid password";
+                            }
+                        }
                     }
                     catch (SshAuthenticationException e)
                     {
@@ -126,6 +189,7 @@ public class LocationSetupMenu
                                         return;
                                     }
                                 }
+
                                 return;
                             }
                         }
@@ -149,22 +213,27 @@ public class LocationSetupMenu
                                         return;
                                     }
                                 }
+
                                 return;
                             }
                         }
+
                         continue;
                     }
-                
-                    var random = new Random();
+
+                    Canvas.WriteFrameLine(1, 0, "");
+                    Canvas.WriteFrameLine(2, 0, "");
                     
-                    Canvas.WriteFrameLine(0, 1, $"Connected to '{location.Username}@{location.IP}'", AnsiColor.Cornsilk1);
+                    var random = new Random();
+
                     var hostnameResult = client.RunCommand("hostname");
-                    if (hostnameResult.ExitStatus == 0 && Regex.IsMatch(hostnameResult.Result, @"^(?!.*\.\.)[A-Za-z0-9.-]+$") && !(hostnameResult.Result.Trim().Contains('\n') || hostnameResult.Result.Length > 22))
+                    if (hostnameResult.ExitStatus == 0 && Regex.IsMatch(hostnameResult.Result, @"^(?!.*\.\.)[A-Za-z0-9.-]+$") &&
+                        !(hostnameResult.Result.Trim().Contains('\n') || hostnameResult.Result.Length > 22))
                         location.Name = hostnameResult.Result.Trim();
                     Thread.Sleep(random.Next(250, 500));
-                
-                    bool sudoFailed = false;
-                    
+
+
+
                     if (importKey)
                     {
                         y++;
@@ -174,17 +243,14 @@ public class LocationSetupMenu
                         client.RunCommand("mkdir -p ~/.ssh && chmod 700 ~/.ssh");
 
                         var keyText = File.ReadAllText("/jumper-ed25519.pub");
-                        var result = client.RunCommand($"grep -qxF \"{keyText.Trim()}\" ~/.ssh/authorized_keys || echo \"{Environment.NewLine + keyText}\" >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys");
+                        var result = client.RunCommand(
+                            $"grep -qxF \"{keyText.Trim()}\" ~/.ssh/authorized_keys || echo \"{Environment.NewLine + keyText}\" >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys");
                         if (result.ExitStatus != 0)
-                        {
                             Canvas.WriteFrameLine(1, 1, $"Failed to copy public key", AnsiColor.Yellow);
-                            if (result.Error.Contains("\nsudo:"))
-                                sudoFailed = true;
-                        }
                         else
                             Canvas.WriteFrameLine(1, 1, $"Copied public key", AnsiColor.Cornsilk1);
 
-                        
+
                         Thread.Sleep(random.Next(250, 500));
                     }
 
@@ -196,23 +262,28 @@ public class LocationSetupMenu
                         Canvas.WriteFrameLine(y - 1, 1, $"Disabling password auth...", AnsiColor.Cornsilk1);
                         Thread.Sleep(random.Next(750, 1500));
 
-                        var result = client.RunCommand(
-                            @$"grep -q '^PasswordAuthentication no' /etc/ssh/sshd_config || echo ""{password}"" | sudo -S bash -c ""((grep -q '^PasswordAuthentication .*' /etc/ssh/sshd_config && sed -i 's/^PasswordAuthentication .*$/\# PasswordAuthentication no/' /etc/ssh/sshd_config) & sed -i '1i PasswordAuthentication no\n' /etc/ssh/sshd_config) && exit 117""");
-                        if (result.ExitStatus != 0 && result.ExitStatus != 117)
+                        if (!sudoFailed)
                         {
-                            Canvas.WriteFrameLine(y - 1, 1, $"Failed to disable password auth", AnsiColor.Yellow);
-                            if (result.Error.Contains("\nsudo:"))
-                                sudoFailed = true;
+                            var result = client.RunCommand(
+                                @$"grep -q '^PasswordAuthentication no' /etc/ssh/sshd_config || echo ""{password}"" | sudo -S bash -c ""((grep -q '^PasswordAuthentication .*' /etc/ssh/sshd_config && sed -i 's/^PasswordAuthentication .*$/\# PasswordAuthentication no/' /etc/ssh/sshd_config) & sed -i '1i PasswordAuthentication no\n' /etc/ssh/sshd_config) && exit 117""");
+                            if (result.ExitStatus != 0 && result.ExitStatus != 117)
+                            {
+                                Canvas.WriteFrameLine(y - 1, 1, $"Failed to disable password auth", AnsiColor.Yellow);
+                                if (result.Error.Contains("\nsudo:"))
+                                    sudoFailed = true;
+                            }
+                            else
+                                Canvas.WriteFrameLine(y - 1, 1, $"Disabled password auth", AnsiColor.Cornsilk1);
+
+                            if (result.ExitStatus == 117)
+                                restartSsh = true;
                         }
                         else
-                            Canvas.WriteFrameLine(y - 1, 1, $"Disabled password auth", AnsiColor.Cornsilk1);
+                            Canvas.WriteFrameLine(y - 1, 1, $"Failed to disable password auth", AnsiColor.Yellow);
 
-                        if (result.ExitStatus == 117)
-                            restartSsh = true;
-                        
                         Thread.Sleep(random.Next(250, 500));
                     }
-                    
+
                     if (randomizeSSHPort)
                     {
                         y++;
@@ -235,7 +306,7 @@ public class LocationSetupMenu
                         if (!sudoFailed)
                         {
                             var result = client.RunCommand(
-                                @$"grep -q '^Port {port}' /etc/ssh/sshd_config || echo ""{password}"" | sudo -S bash -c ""((grep -q '^Port .*' /etc/ssh/sshd_config && sed -i 's/^PasswordAuthentication .*$/\# Port 22/' /etc/ssh/sshd_config) & sed -i '1i Port {port}\n' /etc/ssh/sshd_config) && exit 117""");
+                                @$"grep -q '^Port {port}' /etc/ssh/sshd_config || echo ""{password}"" | sudo -S bash -c ""((grep -q '^Port .*' /etc/ssh/sshd_config && sed -i 's/^Port .*$/\# Port 22/' /etc/ssh/sshd_config) & sed -i '1i Port {port}\n' /etc/ssh/sshd_config) && exit 117""");
                             if (result.ExitStatus != 0 && result.ExitStatus != 117)
                                 Canvas.WriteFrameLine(y - 1, 1, $"Failed randomize SSH port", AnsiColor.Yellow);
                             else
@@ -246,10 +317,10 @@ public class LocationSetupMenu
 
                             if (result.ExitStatus == 117)
                                 restartSsh = true;
-                        } 
+                        }
                         else
-                            Canvas.WriteFrameLine(y - 1, 1, $"Randomized SSH port", AnsiColor.Cornsilk1);
-                        
+                            Canvas.WriteFrameLine(y - 1, 1, $"Failed randomize SSH port", AnsiColor.Yellow);
+
                         Thread.Sleep(random.Next(250, 500));
                     }
 
@@ -261,7 +332,7 @@ public class LocationSetupMenu
                     y++;
                     Canvas.WriteFrameLine(y - 1, 1, $"Saving fingerprint...", AnsiColor.Cornsilk1);
                     Thread.Sleep(random.Next(750, 1500));
-                    
+
                     if (keyReceived.IsSet)
                         Canvas.WriteFrameLine(y - 1, 1, $"Saved fingerprint", AnsiColor.Cornsilk1);
                     else
@@ -283,7 +354,7 @@ public class LocationSetupMenu
                     }
 
                     Canvas.WriteFrameLine(y, 1, $"Entry setup complete", AnsiColor.Green3);
-                    
+
                     Canvas.WriteFrameLine(y + 2, 1, $"Press any key to return to menu...", AnsiColor.Grey93);
                     Console.ReadKey(true);
                     break;
@@ -310,23 +381,24 @@ public class LocationSetupMenu
             }
         }
     }
-    
+
     static (string Salt, string HostHash, string Key) FormatKnownHostEntry(string host, byte[] hostKey)
     {
         byte[] saltBytes = new byte[20];
         RandomNumberGenerator.Fill(saltBytes);
 
         string saltBase64 = Convert.ToBase64String(saltBytes);
-        
+
         byte[] hostBytes = Encoding.UTF8.GetBytes(host);
         byte[] hostHashBytes;
         using (HMACSHA1 sha1 = new HMACSHA1(saltBytes))
         {
             hostHashBytes = sha1.ComputeHash(hostBytes);
         }
+
         string hostHashBase64 = Convert.ToBase64String(hostHashBytes);
 
-        
+
         //string hostHash = "|1|" + saltBase64 + "|" + hashBase64;
         string keyBase64 = Convert.ToBase64String(hostKey);
 
@@ -336,12 +408,12 @@ public class LocationSetupMenu
 
     private static bool SavePrompt(bool canceled) =>
         Canvas.OptionPrompt("Save", canceled ? "Setup canceled. Save the entry anyways?" : "Setup failed. Save the entry anyways?", "Save", "Discard");
-    
+
     private static string? ReadPassword(bool firstRun)
     {
         var complete = new ManualResetEventSlim();
         string password = "";
-        
+
         if (!firstRun)
         {
             /*
@@ -352,7 +424,7 @@ public class LocationSetupMenu
                 {
                     if (complete.IsSet)
                         return;
-                    
+
                     TerminalCommands.Execute(TerminalCommand.HideCursor);
                     Canvas.WriteFrameLine(2, 0, "");
                     // ReSharper disable once AccessToModifiedClosure
@@ -362,10 +434,10 @@ public class LocationSetupMenu
             });
             */
         }
-        
+
         TerminalCommands.Execute(TerminalCommand.ShowCursor);
 
-        
+
         ConsoleKeyInfo keyInfo;
         while ((keyInfo = Console.ReadKey(true)).Key != ConsoleKey.Enter)
         {
@@ -400,9 +472,9 @@ public class LocationSetupMenu
 
         return password;
     }
-        
+
     private static object _lock = new object();
- 
+
     public static string Truncate(string value, int maxLength)
     {
         if (string.IsNullOrEmpty(value)) return value;

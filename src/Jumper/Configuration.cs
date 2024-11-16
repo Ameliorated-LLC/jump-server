@@ -101,7 +101,6 @@ public class Location : IDisposable, INotifyPropertyChanged
     private CancellationTokenSource? _cts = null;
     public void StartPinging()
     {
-        var random = "/etc/jumper/xxx" + new Random().Next(1000, 100000);
         _cts = new CancellationTokenSource();
         var token = _cts.Token;
         Task.Run(() =>
@@ -112,7 +111,6 @@ public class Location : IDisposable, INotifyPropertyChanged
                 
                 while (true)
                 {
-                    File.AppendAllText(random, "\nStartLoop");
                     token.ThrowIfCancellationRequested();
                     
                     var result = false;
@@ -148,12 +146,10 @@ public class Location : IDisposable, INotifyPropertyChanged
                     }
                     catch
                     {
-                        File.AppendAllText(random, "\nMainErr");
                         token.ThrowIfCancellationRequested();
                     }
 
                     Connected = result;
-                    File.AppendAllText(random, "\nSetConnected " + Connected.Value);
 
                     if (Connected != true)
                     {
@@ -181,14 +177,11 @@ public class Location : IDisposable, INotifyPropertyChanged
                         }
                         catch
                         {
-                            File.AppendAllText(random, "\nFail");
                             token.ThrowIfCancellationRequested();
                             Thread.Sleep(3000);
                             break;
                         }
                     }
-                    
-                    File.AppendAllText(random, "\nLoop");
                 }
             }
             catch
