@@ -70,12 +70,18 @@ public class JumpMenu
             }
             if (keyInfo.Key == ConsoleKey.E && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control) && Program.Authenticated)
             {
+                _options.ForEach(x => x.Location.PropertyChanged -= LocationOnPropertyChanged!);
+                _lock.Wait();
+                
                 EntryMenu.Edit(Configuration.Current.Locations[index]);
                 File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
                 return;
             }
             if (keyInfo.Key == ConsoleKey.D && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control) && Program.Authenticated)
             {
+                _options.ForEach(x => x.Location.PropertyChanged -= LocationOnPropertyChanged!);
+                _lock.Wait();
+                
                 if (DeleteConfirmMenu.Show(Configuration.Current.Locations[index].Name))
                 {
                     Configuration.Current.Locations[index].Dispose();
@@ -86,6 +92,9 @@ public class JumpMenu
             }
             if (keyInfo.Key == ConsoleKey.A && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control) && Program.Authenticated)
             {
+                _options.ForEach(x => x.Location.PropertyChanged -= LocationOnPropertyChanged!);
+                _lock.Wait();
+                
                 var result = AddEntryMenu.Show();
                 if (result.Location != null)
                 {

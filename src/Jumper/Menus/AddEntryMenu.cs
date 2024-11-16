@@ -5,21 +5,22 @@ namespace JumpServer.Menus;
 
 public class AddEntryMenu
 {
-    private static List<Option> Options =
+    private static List<Option> Options = null!;
+    private static List<Option> GetOptions() =>
     [
-       // new Option() { Type = OptionType.TextInputField, Name = "Name", MinLength = 1 },
+        // new Option() { Type = OptionType.TextInputField, Name = "Name", MinLength = 1 },
         new Option() { Type = OptionType.TextInputField, Name = "Username", Regex = @"^[a-z][a-z0-9_-]{0,31}$", MinLength = 1 },
         new Option() { Type = OptionType.TextInputField, Name = "IP Address", Regex = @"^(?!.*\.\.)[A-Za-z0-9.-]+$", MinLength = 1 },
-        new Option() { Type = OptionType.NumberInputField, Name = "SSH Port", Value = "22", MaxLength = 5, MinLength = 1},
+        new Option() { Type = OptionType.NumberInputField, Name = "SSH Port", Value = "22", MaxLength = 5, MinLength = 1 },
         new Option() { Type = OptionType.ToggleButton, Name = "Import SSH Public Key", Toggled = true },
         new Option() { Type = OptionType.ToggleButton, Name = "Disable Password Auth", Toggled = true },
-        new Option() { Type = OptionType.ToggleButton, Name = "Randomize Remote SSH Port", Toggled = false},
+        new Option() { Type = OptionType.ToggleButton, Name = "Randomize Remote SSH Port", Toggled = false },
         //new Option() { Type = OptionType.ToggleButton, Name = "Require TOTP 2FA Auth", Toggled = false},
-        
+
         new Option() { Type = OptionType.Selection, Name = " Connect ", Validater = true },
         new Option() { Type = OptionType.Selection, Name = " Cancel " },
     ];
-
+    
     public static (Location? Location, bool ImportKey, bool DisablePasswordAuth, bool RandomizeSSHPort, bool RequireTOTP) Show()
     {
         Canvas.Set(new Frame("Add Entry", 16, 52,
@@ -27,10 +28,7 @@ public class AddEntryMenu
             new DynamicBar() { Center = new Text("Use the space bar to toggle options", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }
             ));
 
-
-        Options.ForEach(x => x.Value = "");
-        Options.First(x => x.Name == "SSH Port").Value = "22";
-
+        Options = GetOptions();
         WriteOptions();
         
         var validater = Options.FirstOrDefault(x => x.Validater);

@@ -10,7 +10,7 @@ public class EntryMenu
         new Option() { Type = OptionType.TextInputField, Name = "Name", MinLength = 1 },
         new Option() { Type = OptionType.TextInputField, Name = "Username", Regex = @"^[a-z][a-z0-9_-]{0,31}$", MinLength = 1 },
         new Option() { Type = OptionType.TextInputField, Name = "IP Address", Regex = @"^(?!.*\.\.)[A-Za-z0-9.-]+$", MinLength = 1 },
-        new Option() { Type = OptionType.NumberInputField, Name = "Port", Value = "22", MaxLength = 5, MinLength = 1},
+        new Option() { Type = OptionType.NumberInputField, Name = "SSH Port", Value = "22", MaxLength = 5, MinLength = 1},
         new Option() { Type = OptionType.Selection, Name = " Save ", Validater = true },
         new Option() { Type = OptionType.Selection, Name = " Delete " },
     ];
@@ -25,7 +25,7 @@ public class EntryMenu
         Options.First(x => x.Name == "Name").Value = location.Name;
         Options.First(x => x.Name == "Username").Value = location.Username;
         Options.First(x => x.Name == "IP Address").Value = location.IP;
-        Options.First(x => x.Name == "Port").Value = location.Port.ToString();
+        Options.First(x => x.Name == "SSH Port").Value = location.Port.ToString();
         
         WriteOptions();
         
@@ -110,7 +110,7 @@ public class EntryMenu
             location.Name = Options.First(x => x.Name == "Name").Value;
             location.Username = Options.First(x => x.Name == "Username").Value;
             location.IP = Options.First(x => x.Name == "IP Address").Value;
-            location.Port = int.Parse(Options.First(x => x.Name == "Port").Value);
+            location.Port = int.Parse(Options.First(x => x.Name == "SSH Port").Value);
         }
         else if (DeleteConfirmMenu.Show(location.Name))
         {
