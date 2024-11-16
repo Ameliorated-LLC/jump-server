@@ -129,7 +129,7 @@ public static class SetupMain
                     argon2.Salt = Encoding.UTF8.GetBytes("jumper-salt");
                     argon2.DegreeOfParallelism = 8;
                     argon2.MemorySize = 65536;
-                    argon2.Iterations = 20;
+                    argon2.Iterations = 16;
 
                     byte[] hashBytes = argon2.GetBytes(32);
                     adminPassword = Convert.ToBase64String(hashBytes);
