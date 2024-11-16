@@ -1,39 +1,50 @@
-# Secure SSH Jump Server
+<h1 align="center">Jumper</h1>
+<h3 align="center">Secure SSH Frontend</h3>
 
-This project provides a secure SSH jump server for Debian and RedHat-based systems, designed for users who want a clean interface and automated SSH management. The jump server generates its own SSH key that optionally copies the public key to remote `authorized_keys` files when adding an SSH server entry. This allows secure access to remote servers from an isolated, controlled environment. During initial setup, it creates a chroot environment under a new user, and facilitates adding entries through a secure admin interface.
+---
 
-## Features
+![Jumper Screenshot](screenshot.png?raw=true)
 
-- **Isolated Chroot Environment**: Creates an isolated chroot environment, reducing exposure and maintaining security.
-- **Automated SSH Key Management**: Automatically generates and manages an SSH key, and copies the public key to added remote servers.
-- **Automated Server Setup**: Automates adding remote servers, optionally disabling password SSH authentication after copying the public key.
+---
 
-## Installation
+This project provides a secure SSH frontend for Debian and RedHat-based systems. Jumper automates creating a secure jump environment, along with managing jump targets and importing keys—all wrapped in a clean terminal interface.
 
-### Prerequisites
+## Deployment
+
+**Prerequisites:**
 
 - Debian or RedHat-based Linux system
-- `wget` package for fetching the latest release from GitHub
+- OpenSSH Client (`ssh`) and OpenSSH Server (`sshd`)
 
-### Deployment
+For Debian-based systems, see the following installation methods:
 
-Download and install the latest release from the [GitHub repository](https://github.com/Ameliorated-LLC/jumper), using the correct file for your system type.
-
-For Debian-based systems, use the following command:
+### APT (Recommended)
 
 ```bash
-wget -q https://github.com/Ameliorated-LLC/jumper/releases/latest/download/jumper.deb && sudo dpkg -i jumper.deb && rm jumper.deb
+curl -s --compressed "https://ameliorated-llc.github.io/jumper/Packaging/PPA/KEY.gpg" | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/jumper.gpg >/dev/null
+sudo curl -s --compressed -o /etc/apt/sources.list.d/jumper.list "https://ameliorated-llc.github.io/jumper/Packaging/PPA/any.list"
+sudo apt update && sudo apt install jumper
 ```
 
-For RedHat-based systems, use the following command:
+### DPKG
 
 ```bash
-wget -q https://github.com/Ameliorated-LLC/jumper/releases/latest/download/jumper.rpm && sudo rpm -ivh jumper.rpm && rm jumper.rpm
+curl -sL https://github.com/Ameliorated-LLC/jumper/releases/latest/download/jumper.deb -o jumper.deb && sudo dpkg -i jumper.deb && rm jumper.deb
 ```
 
-## Initial Setup
+For RedHat-based systems, see the following installation methods:
 
-After installation, initialize first time setup by running:
+### RPM
+
+```bash
+curl -sL https://github.com/Ameliorated-LLC/jumper/releases/latest/download/jumper.rpm -o jumper.rpm && sudo rpm -ivh jumper.rpm && rm jumper.rpm
+```
+
+## Usage
+
+### Initial Setup
+
+To setup jumper after installation, initialize first time setup by running:
 
 ```bash
 sudo jumper
@@ -43,7 +54,7 @@ The setup will:
 
 1. Prompt to set an admin password for future access to the jump server's admin interface.
 2. Prompt to set a password for a new `jump` user that will be used with SSH to use jumper.
-3. Create the user’s isolated chroot environment and configure SSH config to run jumper with that user.
+3. Create the user’s isolated chroot environment and configure `sshd_config` to run jumper with that user.
 
 *If a user named `jump` already exists, it will ask for a username of choice during setup.*
 
@@ -55,16 +66,9 @@ ssh jump@localhost
 
 Upon logging in, you will be directed to add SSH entries via the secure admin interface.
 
-## Usage
+### Configuration
 
-### Admin Interface
-
-- Use the jump server’s admin interface to add and manage SSH entries.
-- To access the admin interface, press Ctrl + X in the jump menu and enter the admin password set during initial setup.
-
-## Configuration
-
-- User-specific configuration files are located at `/etc/jumper`.
+- Configuration files are located at `/etc/jumper`.
 
 ## License
 
