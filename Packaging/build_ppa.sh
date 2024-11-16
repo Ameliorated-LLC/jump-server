@@ -9,7 +9,7 @@ command -v gpg > /dev/null 2>&1 || { echo "Error: gpg command is not available" 
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-"$SCRIPT_DIR/build_dpkg.sh" $1 -o "$SCRIPT_DIR/PPA" || { echo "Error: build_dpkg failed" >&2; exit 1; }
+"$SCRIPT_DIR/build_dpkg.sh" $1 -o "$SCRIPT_DIR/PPA/pool/main/j/jumper/jumper_$1-1~noble-jammy-focal_amd64.deb" || { echo "Error: build_dpkg failed" >&2; exit 1; }
 
 rm -rf "/tmp/JumpPPA"
 cp -rf "$SCRIPT_DIR/PPA" "/tmp/JumpPPA"
