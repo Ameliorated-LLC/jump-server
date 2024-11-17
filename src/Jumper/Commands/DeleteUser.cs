@@ -9,8 +9,13 @@ public class DeleteUser
     [DllImport("libc")]
     private static extern int kill(int pid, int sig);
 
-    public static int Execute(Program.DeleteUserOptions options)
+    public static int Execute(Program.DeleteUserOptions options, bool sudo)
     {
+        if (!sudo)
+        {
+            Console.WriteLine("sudo is required to run this command.");
+            return 1;
+        }
         if (!Directory.Exists("/etc/jumper"))
         {
             Console.WriteLine("Configuration directory for jumper doesn't exist.");
@@ -51,15 +56,6 @@ public class DeleteUser
                 Console.WriteLine($"Warning: error killing jumper process: {ex.Message}");
             }
 
-            try
-            {
-                File.Copy("/usr/bin/sh", $"/home/{options.Username}/chroot/bin/jumper", true);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Warning: Could not update user jumper executable: {e.Message}");
-            }
-
             if (!options.Confirm)
             {
                 Console.Write($"Delete jumper chroot user {options.Username.ToColored(AnsiColor.Fuchsia)} with key? [Y/N] ");
@@ -83,6 +79,15 @@ public class DeleteUser
 
                 if (!delete)
                     return 5;
+            }
+            
+            try
+            {
+                File.Copy("/usr/bin/sh", $"/home/{options.Username}/chroot/bin/jumper", true);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Warning: Could not update user jumper executable: {e.Message}");
             }
             
             try

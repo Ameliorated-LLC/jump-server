@@ -8,8 +8,14 @@ public class Push
     [DllImport("libc")]
     private static extern int kill(int pid, int sig);
 
-    public static int Execute(Program.PushOptions options)
+    public static int Execute(Program.PushOptions options, bool sudo)
     {
+        if (!sudo)
+        {
+            Console.WriteLine("sudo is required to run this command.");
+            return 1;
+        }
+        
         if (!File.Exists("/usr/bin/jumper"))
         {
             Console.WriteLine("Warning: jumper not found in bin directory.");

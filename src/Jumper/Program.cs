@@ -56,6 +56,8 @@ public class Program
     }
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(RunOptions))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ChangePasswordOptions))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(RunOptions))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(RunOptions))]
     private static int HandleArguments(string[] args)
     {
         if (args.Length == 0)
@@ -103,18 +105,29 @@ Options:
             return 1;
         }
 
-        switch (parserResult.Value)
+        if (parserResult.Value is RunOptions runOptions)
+            return Start(runOptions);
+
+        try
         {
-            case RunOptions runOptions:
-                return Start(runOptions);
-            case ChangePasswordOptions changePasswordOptions:
-                return ChangePassword.Execute(changePasswordOptions);
-            case DeleteUserOptions deleteUserOptions:
-                return DeleteUser.Execute(deleteUserOptions);
-            case PushOptions pushOptions:
-                return Push.Execute(pushOptions);
-            default:
-                return 1;
+            bool sudo = IsRunningWithSudo();
+        
+            switch (parserResult.Value)
+            {
+                case ChangePasswordOptions changePasswordOptions:
+                    return ChangePassword.Execute(changePasswordOptions, sudo);
+                case DeleteUserOptions deleteUserOptions:
+                    return DeleteUser.Execute(deleteUserOptions, sudo);
+                case PushOptions pushOptions:
+                    return Push.Execute(pushOptions, sudo);
+                default:
+                    return 1;
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return 1;
         }
     }
     
