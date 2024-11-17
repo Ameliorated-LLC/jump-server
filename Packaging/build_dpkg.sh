@@ -14,6 +14,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GIT_DIR="$(cd "$SCRIPT_DIR" && cd .. && pwd)"
 TEMP_DIR="/tmp/JumpCompile"
 
+gzip -k "$SCRIPT_DIR/manpage"
+mv "$SCRIPT_DIR/manpage.gz" "$SCRIPT_DIR/DPKG/usr/share/man1/jumper.1.gz"
+
 rsync -aq --delete --exclude '/src/Jumper/bin' --exclude '/src/Jumper/obj' --exclude '/src/Jumper/.idea' --exclude '/src/PostInstallScript/bin' --exclude '/src/PostInstallScript/obj' --exclude '/src/PostInstallScript/.idea' --exclude '/src/PostRemoveScript/bin' --exclude '/src/PostRemoveScript/obj' --exclude '/src/PostRemoveScript/.idea' "$GIT_DIR/" "$TEMP_DIR/"
 
 sed -i "s|<GlobalVersion>.*</GlobalVersion>|<GlobalVersion>$1</GlobalVersion>|" "$TEMP_DIR/src/Directory.Build.props"

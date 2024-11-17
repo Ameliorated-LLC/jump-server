@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using CommandLine;
 using CommandLine.Text;
+using JumpServer.Commands;
 using JumpServer.Menus;
 using Konscious.Security.Cryptography;
 using YamlDotNet.Serialization;
@@ -17,6 +18,13 @@ public class Program
     public static readonly string Version = Assembly.GetExecutingAssembly().GetName().Version!.Major + "." + Assembly.GetExecutingAssembly().GetName().Version!.Minor + "." + Assembly.GetExecutingAssembly().GetName().Version!.Build;
     public static bool Authenticated = false;
 
+    [Verb("run", HelpText = "Run jumper normally.")]
+    public class RunOptions
+    {
+        [Option("--restrict-admin", Required = false, Default = false, HelpText = "Prevents access to admin menu even with password.")]
+        public bool RestrictAdminAccess { get; set; } = false;
+    }
+    
     [Verb("passwd", HelpText = "Change jumper admin password for an already setup jumper chroot user.")]
     public class ChangePasswordOptions
     {
@@ -24,12 +32,18 @@ public class Program
         public string Username { get; set; } = string.Empty;
     }
     
-    [Verb("run", HelpText = "Run jumper normally.")]
-    public class RunOptions
+    [Verb("deluser", HelpText = "Delete a jumper chroot user along with the users configuration and jumper SSH key.")]
+    public class DeleteUserOptions
     {
-        [Option("--restrict-admin", Required = false, Default = false, HelpText = "Prevents access to admin menu even with password.")]
-        public bool RestrictAdminAccess { get; set; } = false;
+        [Value(0, MetaName = "username", HelpText = "Username of jumper chroot user. (Note: the default jumper username is 'jump')", Required = true)]
+        public string Username { get; set; } = string.Empty;
+        
+        [Option('y', "--confirm", Required = false, Default = false, HelpText = "Confirms deletion of jumper chroot user.")]
+        public bool Confirm { get; set; } = false;
     }
+    
+    [Verb("push", HelpText = "Push jumper executable to any and all jumper chroot users.")]
+    public class PushOptions { }
 
     public static RunOptions CommandLineOptions;
 
@@ -42,16 +56,13 @@ public class Program
     }
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(RunOptions))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ChangePasswordOptions))]
-    private static void HandleArguments(string[] args)
+    private static int HandleArguments(string[] args)
     {
         if (args.Length == 0)
-        {
-            Start(new RunOptions());
-            return;
-        }
+            return Start(new RunOptions());
         
         var parser = new Parser(with => with.HelpWriter = null);
-        var parserResult = parser.ParseArguments<ChangePasswordOptions, RunOptions>(args);
+        var parserResult = parser.ParseArguments<RunOptions, ChangePasswordOptions, DeleteUserOptions, PushOptions>(args);
         if (parserResult.Tag == ParserResultType.NotParsed)
         {
             if (parserResult.Errors.Any() && !parserResult.Errors.Any(x =>
@@ -66,8 +77,8 @@ public class Program
             if (parserResult.Errors.Any(x => x.Tag == ErrorType.VersionRequestedError))
                 Console.WriteLine("jumper v" + Version + Environment.NewLine + "MIT License");
             else
-                Console.WriteLine(@"
-jumper v0.2.0
+                Console.WriteLine(@$"
+jumper v{Version}
 MIT License
 
 Usage:
@@ -75,10 +86,13 @@ Usage:
 
 Commands:
 
-  passwd <username>   Change jumper admin password for an already setup jumper chroot user.
-
   run                          Run jumper normally.
     --restrict-admin           Prevents access to admin menu even with password. (Default: false)
+
+  passwd <username>   Change jumper admin password for an already setup jumper chroot user.
+
+  deluser <username>   Delete a jumper chroot user along with the users configuration and jumper SSH key.
+    --confirm, -y           Confirms deletion of jumper chroot user. (Default: false)
 
 Options:
 
@@ -86,75 +100,32 @@ Options:
   --version                    Display version information.
 ");
             
-            return;
+            return 1;
         }
 
-        if (parserResult.Value is ChangePasswordOptions changePasswordOptions)
+        switch (parserResult.Value)
         {
-            try
-            {
-                if (!Directory.Exists("/etc/jumper") || !Directory.GetFiles("/etc/jumper").Any())
-                {
-                    Console.WriteLine("Jumper has not been configured with a user yet.");
-                    Environment.Exit(1);
-                    return;
-                }
-
-                var file = Directory.GetFiles("/etc/jumper").FirstOrDefault(file => Path.GetFileName(file).Split('.').FirstOrDefault()?.StartsWith(changePasswordOptions.Username) ?? false);
-                if (file == null) {
-                    Console.WriteLine($"No jumper configuration found for {changePasswordOptions.Username}.");
-                    Environment.Exit(1);
-                    return;
-                }
-                
-                var yaml = File.ReadAllText(file);
-                var configuration = Configuration.Deserialize(yaml);
-
-                string? base64;
-                
-                Console.Write("Enter new password: ");
-                var password = ReadPassword();
-                Console.WriteLine();
-                if (string.IsNullOrWhiteSpace(password))
-                    base64 = null;
-                else
-                {
-                    using (var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password)))
-                    {
-                        argon2.Salt = Encoding.UTF8.GetBytes("jumper-salt");
-                        argon2.DegreeOfParallelism = 8;
-                        argon2.MemorySize = 65536;
-                        argon2.Iterations = 10;
-
-                        byte[] hashBytes = argon2.GetBytes(32);
-                        base64 = Convert.ToBase64String(hashBytes);
-                    }
-                }
-                
-                configuration.AdminPassword = base64;
-                
-                File.WriteAllText(file, configuration.Serialize());
-                Console.WriteLine(Environment.NewLine + "Password changed successfully.".ToColored(AnsiColor.Green3));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        } else if (parserResult.Value is RunOptions options)
-        {
-            Start(options);
+            case RunOptions runOptions:
+                return Start(runOptions);
+            case ChangePasswordOptions changePasswordOptions:
+                return ChangePassword.Execute(changePasswordOptions);
+            case DeleteUserOptions deleteUserOptions:
+                return DeleteUser.Execute(deleteUserOptions);
+            case PushOptions pushOptions:
+                return Push.Execute(pushOptions);
+            default:
+                return 1;
         }
     }
     
-    static void Start(RunOptions options)
+    static int Start(RunOptions options)
     {
         CommandLineOptions = options;
         
         if (!File.Exists("/etc/jumper/config.yml") && !IsRunningWithSudo())
         {
             Console.WriteLine("sudo privileges are required for first time setup.");
-            Environment.Exit(1);
-            return;
+            return 1;
         }
 
         PosixSignalRegistration.Create(PosixSignal.SIGTERM, _ => { Exit(null, null); });
@@ -180,13 +151,13 @@ Options:
                         usernames.Add(username);
                     }
 
-                    if (usernames.Count == 1 && !Canvas.OptionPrompt("Setup", $"A jump user already exists. Add another?", "Yes", "No", true))
+                    if (usernames.Count == 1 && !Canvas.OptionPrompt("Setup", $"A jump user already exists. Add another?", "Yes", "No", false))
                     {
                         Exit(null, null);
                         Console.WriteLine("Run " + $"ssh {usernames.First()}@localhost".ToColored(AnsiColor.Green3) + " to use existing configuration.");
-                        return;
+                        return 0;
                     }
-                    else if (usernames.Count > 1 && !Canvas.OptionPrompt("Setup", $"Multiple jump users already exists. Add another?", "Yes", "No", true))
+                    else if (usernames.Count > 1 && !Canvas.OptionPrompt("Setup", $"Multiple jump users already exists. Add another?", "Yes", "No", false))
                     {
                         Exit(null, null);
                         Console.WriteLine("Existing jump users:");
@@ -195,13 +166,13 @@ Options:
                             Console.WriteLine(username);
                         }
                         Console.WriteLine("Run " + $"ssh [username]@localhost".ToColored(AnsiColor.Green3) + " to use existing configuration.");
-                        return;
+                        return 0 ;
                     }
                 }
 
                 Menus.Setup.SetupMain.Start();
                 Exit(null, null);
-                return;
+                return 0;
             }
 
             try
@@ -214,8 +185,7 @@ Options:
             {
                 Exit(null, null);
                 Console.WriteLine("Error reading config.yml: " + e.Message);
-                Environment.Exit(1);
-                return;
+                return 1;
             }
             
             Configuration.Current.Locations.ForEach(x => x.StartPinging());
@@ -236,8 +206,7 @@ Options:
         {
             Exit(null, null);
             Console.WriteLine(e);
-            Environment.Exit(1);
-            return;
+            return 1;
         }
 
         Exit(null, null);
@@ -245,7 +214,7 @@ Options:
 
     static void Main(string[] args)
     {
-        HandleArguments(args);
+        Environment.Exit(HandleArguments(args));
     }
 
     public static void Exit(object? sender, EventArgs? e)
@@ -265,30 +234,4 @@ Options:
 
     private static object _exitLock = new object();
     private static volatile bool _exitTriggered = false;
-    
-    private static string ReadPassword()
-    {
-        string password = "";
-
-        ConsoleKeyInfo keyInfo;
-        while ((keyInfo = Console.ReadKey(true)).Key != ConsoleKey.Enter)
-        {
-            if (keyInfo.Key == ConsoleKey.Backspace && password.Length > 0)
-            {
-                Console.Write("\b \b");
-                password = password.Substring(0, password.Length - 1);
-                continue;
-            }
-
-            if (keyInfo.Key == ConsoleKey.Enter)
-                break;
-            if (char.IsControl(keyInfo.KeyChar))
-                continue;
-
-            Console.Write("*");
-            password += keyInfo.KeyChar;
-        }
-
-        return password;
-    }
 }

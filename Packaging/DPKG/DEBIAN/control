@@ -5,4 +5,4 @@ Priority: optional
 Architecture: amd64
 Depends: zlib1g, libc6, iputils-ping, openssh-client, openssh-server
 Description: Secure jump server manager
-Maintainer: Styris
+Maintainer: Ameliorated LLC

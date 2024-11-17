@@ -1,6 +1,84 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
+using System.Text;
 
 namespace JumpServer;
+
+public static class Utilities
+{
+    
+    public static (string Output, string Error, int ExitCode) ExecuteCommand(string command, string[] arguments, string? input = null)
+    {
+        var outputBuilder = new StringBuilder();
+        var errorBuilder = new StringBuilder();
+
+        using (Process process = new Process())
+        {
+            process.StartInfo.FileName = command;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
+            
+            foreach (string argument in arguments)
+            {
+                process.StartInfo.ArgumentList.Add(argument);
+            }
+            
+            using var outputCompleted = new SemaphoreSlim(0, 1);
+            using var errorCompleted = new SemaphoreSlim(0, 1);
+
+            process.OutputDataReceived += (sender, args) =>
+            {
+                if (args.Data != null)
+                    outputBuilder.AppendLine(args.Data);
+                else
+                    // ReSharper disable once AccessToDisposedClosure
+                    outputCompleted.Release();
+            };
+            process.ErrorDataReceived += (sender, args) =>
+            {
+                if (args.Data != null)
+
+                    errorBuilder.AppendLine(args.Data);
+                else
+                    // ReSharper disable once AccessToDisposedClosure
+                    errorCompleted.Release();
+            };
+
+            try
+            {
+                process.Start();
+
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                if (input != null)
+                {
+                    using (var stdin = process.StandardInput)
+                    {
+                        stdin.WriteLine(input);
+                        stdin.Flush();
+                    }
+                }
+                
+                process.WaitForExit();
+                
+                outputCompleted.Wait();
+                errorCompleted.Wait();
+
+                int exitCode = process.ExitCode;
+
+                return (outputBuilder.ToString(), errorBuilder.ToString(), exitCode);
+            }
+            catch (Exception ex)
+            {
+                return ($"Exception: {ex.Message}", ex.Message, -1);
+            }
+        }
+    }
+}
 
 public enum AnsiColor
 {
