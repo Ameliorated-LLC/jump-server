@@ -55,9 +55,12 @@ done
 rm -rf "$GNUPGHOME"
 
 cd "$GIT_DIR"
-git commit -am "Temporary filter commit"
+CACHED=true
+git commit -am "Temporary filter commit" || CACHED=false
 git filter-repo --path-regex "^Packaging/PPA/(?!.*\.gitkeep$).*$" --invert-paths --force
-git reset HEAD~
+if [ "$CACHED" = true ]; then
+  git reset HEAD~
+fi
 git add "Packaging/PPA/*"
 
 git remote add origin https://github.com/Ameliorated-LLC/jumper
