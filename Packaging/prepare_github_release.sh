@@ -1,8 +1,3 @@
-if [[ -z "$1" || ! "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    echo "Wrong version format"
-    exit 1
-fi
-
 CURDIR="$(pwd)"
 
 command -v git > /dev/null 2>&1 || { echo "Error: git command is not available" >&2; exit 1; }
@@ -11,10 +6,6 @@ git filter-repo 2>&1 | grep -x "No arguments specified." > /dev/null || { echo -
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GIT_DIR="$(cd "$SCRIPT_DIR" && cd .. && pwd)"
-
-chmod +x "$SCRIPT_DIR/build_dpkg.sh"
-"$SCRIPT_DIR/build_dpkg.sh" $1 -o "$SCRIPT_DIR/PPA/pool/main/j/jumper/jumper_$1-1_amd64.deb" || { echo "Error: build_dpkg failed" >&2; exit 1; }
-# "$SCRIPT_DIR/build_dpkg.sh" $1 -o "$SCRIPT_DIR/PPA/pool/main/j/jumper/jumper_$1-1~noble-jammy-focal_amd64.deb" || { echo "Error: build_dpkg failed" >&2; exit 1; }
 
 rm -rf "/tmp/JumpPPA"
 cp -rf "$SCRIPT_DIR/PPA" "/tmp/JumpPPA"
