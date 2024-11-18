@@ -56,8 +56,8 @@ public class Program
     }
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(RunOptions))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ChangePasswordOptions))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(RunOptions))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(RunOptions))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(DeleteUserOptions))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(PushOptions))]
     private static int HandleArguments(string[] args)
     {
         if (args.Length == 0)
