@@ -69,4 +69,4 @@ rm -rf "/tmp/JumpPPA"
 
 cd "$CURDIR"
 
-echo "PPA build completed. Please commit and push changes to make release publicly available."
+echo -e "\nPPA build completed. Please commit and FORCE push changes to make release publicly available."
