@@ -42,6 +42,10 @@ else
   rm "$TEMP_DIR/Packaging/DPKG/DEBIAN/postrm.dbg"
   # cp -rf ./jumper "$TEMP_DIR/Packaging/DPKG/usr/bin"
   chmod -R 0755 "$TEMP_DIR/Packaging/DPKG/DEBIAN"
+
+  rm "$TEMP_DIR/Packaging/DPKG/usr/bin/.gitkeep"
+  rm "$TEMP_DIR/Packaging/DPKG/etc/jumper/.gitkeep"
+
   chmod +x "$TEMP_DIR/Packaging/DPKG/DEBIAN/postinst"
   chmod +x "$TEMP_DIR/Packaging/DPKG/DEBIAN/postrm"
   chmod +x "$TEMP_DIR/Packaging/DPKG/usr/bin/jumper"
