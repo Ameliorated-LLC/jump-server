@@ -26,7 +26,6 @@ git filter-repo --path-regex "^Packaging/PPA/(?!.*\.gitkeep$).*$" --invert-paths
 if [ "$CACHED" = true ]; then
   git reset HEAD~
 fi
-git add "Packaging/PPA/*"
 
 git remote add origin https://github.com/Ameliorated-LLC/jumper
 git fetch origin
@@ -37,4 +36,6 @@ rm -rf "/tmp/JumpPPA"
 
 cd "$CURDIR"
 
-echo -e "\nRepository is ready for GitHub release. Please commit and FORCE push changes before making a release."
+echo -e "\nRepository is ready for GitHub release. Please FORCE push changes before making a release."
+echo -e "Once your release is published, run git add \"Packaging/PPA/*\" and commit + FORCE push."
+"
