@@ -21,7 +21,7 @@ public class JumpMenu
     {
         Canvas.Set(new Frame(Configuration.Current.ServerName, _options.Count + 4, 52,
             new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
-            admin || Program.CommandLineOptions.RestrictAdminAccess ? null : new DynamicBar() { Center = new Text("Press Escape to unlock admin options", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() },
+            admin || Program.CommandLineOptions.RestrictAdminAccess ? null : new DynamicBar() { Center = new Text("Press Ctrl + X to unlock admin options", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() },
             !admin ? null : new BottomBar() { Items = [
                 " ^A ".ToColored(null, AnsiColor.Grey35) + " Add Entry ".ToColored(null, AnsiColor.Grey19),
                 " ^D ".ToColored(null, AnsiColor.Grey35) + " Delete Entry ".ToColored(null, AnsiColor.Grey19),
