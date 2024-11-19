@@ -82,7 +82,7 @@ public static class SetupMain
         
         Canvas.Set(new Frame("Setup", 10, 52,
             new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() }
-            //new DynamicBar() { Center = new Text("Press Ctrl + X to cancel setup", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }
+            //new DynamicBar() { Center = new Text("Press Escape to cancel setup", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }
         ));
         
         try

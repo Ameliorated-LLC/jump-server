@@ -12,7 +12,7 @@ public class AdminMenu
         
         Canvas.Set(new Frame("Admin", 8, 52,
             new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
-            new DynamicBar() { Center = new Text("Press Ctrl + X to return to menu", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile()
+            new DynamicBar() { Center = new Text("Press Escape to return to menu", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile()
             }));
         
         for (var i = 0; i < _options.Count; i++)
@@ -26,7 +26,7 @@ public class AdminMenu
         ConsoleKeyInfo keyInfo;
         while ((keyInfo = Console.ReadKey(true)).Key != ConsoleKey.Enter)
         {
-            if (keyInfo.Key == ConsoleKey.X && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control))
+            if (keyInfo.Key == ConsoleKey.Escape)
                 return;
 
             if (keyInfo.Key == ConsoleKey.DownArrow || keyInfo.Key == ConsoleKey.S || keyInfo.Key == ConsoleKey.Tab)

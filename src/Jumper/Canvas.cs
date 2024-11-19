@@ -491,7 +491,7 @@ public static class Canvas
     {
         Canvas.Set(new Frame(title, 10, 52,
             new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() }
-            //new DynamicBar() { Center = new Text("Press Ctrl + X to cancel setup", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }
+            //new DynamicBar() { Center = new Text("Press Escape to cancel setup", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }
         ));
         
         var messageOffset = (Canvas.Frame.FrameWidth - 4 - message.Length) / 2;

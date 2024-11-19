@@ -19,7 +19,7 @@ public class EntryMenu
     {
         Canvas.Set(new Frame("Edit Entry", 14, 52,
             new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
-            new DynamicBar() { Center = new Text("Press Ctrl + X to return to menu", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }
+            new DynamicBar() { Center = new Text("Press Escape to return to menu", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }
             ));
 
         Options.First(x => x.Name == "Name").Value = location.Name;
@@ -37,7 +37,7 @@ public class EntryMenu
         ConsoleKeyInfo keyInfo;
         while ((keyInfo = Console.ReadKey(true)).Key != ConsoleKey.Enter || Options[index].Type != OptionType.Selection)
         {
-            if (keyInfo.Key == ConsoleKey.X && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control))
+            if (keyInfo.Key == ConsoleKey.Escape)
             {
                 TerminalCommands.Execute(TerminalCommand.HideCursor);
                 return;

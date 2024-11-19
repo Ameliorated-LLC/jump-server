@@ -25,7 +25,7 @@ public class LocationSetupMenu
 
         Canvas.Set(new Frame("Entry Setup", height, 52,
             new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
-            new DynamicBar() { Center = new Text("Press Ctrl + X to cancel setup", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }
+            new DynamicBar() { Center = new Text("Press Escape to cancel setup", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }
         ));
 
         string? password = null;
@@ -448,7 +448,7 @@ public class LocationSetupMenu
                     continue;
                 }
 
-                if (keyInfo.Key == ConsoleKey.X && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control))
+                if (keyInfo.Key == ConsoleKey.Escape)
                     return null;
 
                 if (keyInfo.Key == ConsoleKey.Enter)

@@ -8,7 +8,7 @@ public class EditMenu
     {
         Canvas.Set(new Frame("Edit Entry", Configuration.Current.Locations.Count + 4, 52,
             new DynamicBar() { Center = new Text("jumper v" + Program.Version, AnsiColor.Grey93, (AnsiColor?)null).Compile() },
-            new DynamicBar() { Center = new Text("Press Ctrl + X to return to menu", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }));
+            new DynamicBar() { Center = new Text("Press Escape to return to menu", AnsiColor.Cornsilk1, (AnsiColor?)null).Compile() }));
 
         if (Configuration.Current.Locations.Count < 1)
             throw new ArgumentException();
@@ -27,7 +27,7 @@ public class EditMenu
         ConsoleKeyInfo keyInfo;
         while ((keyInfo = Console.ReadKey(true)).Key != ConsoleKey.Enter)
         {
-            if (keyInfo.Key == ConsoleKey.X && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control))
+            if (keyInfo.Key == ConsoleKey.Escape)
                 return;
 
             if (keyInfo.Key == ConsoleKey.DownArrow || keyInfo.Key == ConsoleKey.S || keyInfo.Key == ConsoleKey.Tab)
