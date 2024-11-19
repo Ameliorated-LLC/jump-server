@@ -1,9 +1,11 @@
-if [[ -z "$1" || ! "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+\if [[ -z "$1" || ! "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo "Wrong version format"
     exit 1
 fi
 
 CURDIR="$(pwd)"
+
+hash -r
 
 command -v gpg > /dev/null 2>&1 || { echo "Error: gpg command is not available" >&2; exit 1; }
 command -v git > /dev/null 2>&1 || { echo "Error: git command is not available" >&2; exit 1; }
@@ -22,7 +24,7 @@ cp -rf "$SCRIPT_DIR/PPA" "/tmp/JumpPPA"
 
 cd /tmp/JumpPPA
 
-gpg "ppa-private-key.asc.gpg"
+gpg --output ./ppa-private-key.asc --decrypt "$SCRIPT_DIR/ppa-private-key.asc.gpg" || { echo "Error: Decryption failed." >&2; exit 1; }
 
 export GNUPGHOME=$(mktemp -d)
 

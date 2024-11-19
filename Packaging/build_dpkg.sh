@@ -3,6 +3,8 @@ if [[ -z "$1" || ! "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     exit 1
 fi
 
+hash -r
+
 if ! command -v dotnet &> /dev/null
 then
   export DOTNET_ROOT=$HOME/.dotnet
