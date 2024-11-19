@@ -23,7 +23,7 @@ public class AuthenticateMenu
             var password = ReadPassword(tries);
             TerminalCommands.Execute(TerminalCommand.HideCursor);
             
-            if (password == null)
+            if (string.IsNullOrEmpty(password))
                 return false;
 
             string base64;

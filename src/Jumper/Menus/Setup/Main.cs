@@ -122,7 +122,7 @@ public static class SetupMain
             
             Directory.CreateDirectory($"/home/{username}/chroot/etc/jumper");
 
-            if (adminPassword != "")
+            if (!string.IsNullOrEmpty(adminPassword))
             {
                 using (var argon2 = new Argon2id(Encoding.UTF8.GetBytes(adminPassword)))
                 {
@@ -155,7 +155,7 @@ public static class SetupMain
             
             foreach (var mount in new List<(string SourcePath, string DestinationPath, bool IsFile, string? ParentFolder, bool Required)> {
                          ("/usr/lib64", $"/home/{username}/chroot/lib64", false, null, true),
-                         ("/usr/lib/x86_64-linux-gnu", $"/home/{username}/chroot/lib/x86_64-linux-gnu", false, null, true),
+                         ("/usr/lib/x86_64-linux-gnu", $"/home/{username}/chroot/lib/x86_64-linux-gnu", false, null, false),
                          ("/usr/bin/ssh", $"/home/{username}/chroot/bin/ssh", true, $"/home/{username}/chroot/bin", true),
                          ("/usr/bin/jumper", $"/home/{username}/chroot/bin/jumper", true, $"/home/{username}/chroot/bin", true),
                          ("/usr/bin/sh", $"/home/{username}/chroot/bin/sh", true, $"/home/{username}/chroot/bin", true),
