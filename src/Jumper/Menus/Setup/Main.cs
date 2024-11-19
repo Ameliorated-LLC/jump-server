@@ -256,10 +256,13 @@ public static class SetupMain
                 
                 File.WriteAllText("/etc/ssh/sshd_config", writer.GetStringBuilder().ToString());
             }
-            
+
             if (ExecuteCommand("systemctl", "restart ssh").ExitCode != 0)
-                throw new Exception("Failed to restart ssh.");
-            
+            {
+                if (ExecuteCommand("systemctl", "restart sshd").ExitCode != 0)
+                    throw new Exception("Failed to restart ssh.");
+            }
+
             Canvas.WriteFrameLine(2, 1, "Added SSH config", AnsiColor.Cornsilk1);
             Thread.Sleep(random.Next(250, 500));
             
