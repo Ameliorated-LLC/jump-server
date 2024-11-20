@@ -74,7 +74,7 @@ Upon logging in, you will be directed to add SSH entries via the secure admin in
 
 - Configuration files are located at `/etc/jumper`.
 
-### Planned Features
+## Planned Features
 
 - **User management** allowing for per-user server access rules from an administrative jumper user
 - **Key based authentication** option for jumper users
