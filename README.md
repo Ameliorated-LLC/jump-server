@@ -38,7 +38,7 @@ curl -sL https://github.com/Ameliorated-LLC/jumper/releases/latest/download/jump
 
 For Red Hat-based systems, see the following installation methods:
 
-#### RPM Package (WIP)
+#### RPM Package
 
 ```bash
 curl -sL https://github.com/Ameliorated-LLC/jumper/releases/latest/download/jumper.rpm -o jumper.rpm && sudo rpm -ivh jumper.rpm && rm jumper.rpm
