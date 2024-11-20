@@ -190,7 +190,9 @@ Options:
 
             try
             {
-                var yaml = File.ReadAllText("/etc/jumper/config.yml");
+                string yaml;
+                using (var _ = new FileOperation("/etc/jumper/config.yml"))
+                    yaml = File.ReadAllText("/etc/jumper/config.yml");
                 Configuration.Current = Configuration.Deserialize(yaml);
                 Configuration.Current.Locations ??= [];
             }

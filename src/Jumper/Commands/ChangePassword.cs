@@ -21,7 +21,9 @@ public class ChangePassword
             return 1;
         }
 
-        var yaml = File.ReadAllText(file);
+        string yaml;
+        using (var _ = new FileOperation(file))
+            yaml = File.ReadAllText(file);
         var configuration = Configuration.Deserialize(yaml);
 
         string? base64;
@@ -47,7 +49,8 @@ public class ChangePassword
 
         configuration.AdminPassword = base64;
 
-        File.WriteAllText(file, configuration.Serialize());
+        using (var _ = new FileOperation(file))
+            File.WriteAllText(file, configuration.Serialize());
         Console.WriteLine(Environment.NewLine + "Password changed successfully.".ToColored(AnsiColor.Green3));
         return 0;
     }

@@ -39,7 +39,8 @@ public class EditMenu
         if (index != -1)
         {
             EntryMenu.Edit(Configuration.Current.Locations[index]);
-            File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
+            using (var _ = new FileOperation("/etc/jumper/config.yml"))
+                File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
         }
     }
     

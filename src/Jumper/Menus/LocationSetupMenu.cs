@@ -57,44 +57,47 @@ public class LocationSetupMenu
                                 keyReceived.Set();
                                 var info = FormatKnownHostEntry(location.IP, e.HostKey);
 
-                                using var writer = new StringWriter();
-                                if (File.Exists("/etc/jumper/known_hosts"))
+                                using (var _ = new FileOperation("/etc/jumper/known_hosts"))
                                 {
-                                    foreach (var line in File.ReadAllLines("/etc/jumper/known_hosts"))
+                                    using var writer = new StringWriter();
+                                    if (File.Exists("/etc/jumper/known_hosts"))
                                     {
-                                        try
+                                        foreach (var line in File.ReadAllLines("/etc/jumper/known_hosts"))
                                         {
-                                            var elements = line.Split('|');
-                                            if (line.StartsWith("|1|") && elements.Length == 4)
+                                            try
                                             {
-                                                var saltBase64 = elements[2];
-                                                var hostHashBase64 = elements[3].Split(' ').First();
-                                                var keyBase64 = elements[3].Split(' ').Last();
-
-                                                byte[] saltBytes = Convert.FromBase64String(saltBase64);
-                                                byte[] hostBytes = Encoding.UTF8.GetBytes(location.IP);
-
-                                                byte[] hostHashBytes;
-                                                using (HMACSHA1 sha1 = new HMACSHA1(saltBytes))
+                                                var elements = line.Split('|');
+                                                if (line.StartsWith("|1|") && elements.Length == 4)
                                                 {
-                                                    hostHashBytes = sha1.ComputeHash(hostBytes);
-                                                }
+                                                    var saltBase64 = elements[2];
+                                                    var hostHashBase64 = elements[3].Split(' ').First();
+                                                    var keyBase64 = elements[3].Split(' ').Last();
 
-                                                var result = Convert.ToBase64String(hostHashBytes);
-                                                if (result != hostHashBase64)
-                                                    writer.WriteLine(line);
+                                                    byte[] saltBytes = Convert.FromBase64String(saltBase64);
+                                                    byte[] hostBytes = Encoding.UTF8.GetBytes(location.IP);
+
+                                                    byte[] hostHashBytes;
+                                                    using (HMACSHA1 sha1 = new HMACSHA1(saltBytes))
+                                                    {
+                                                        hostHashBytes = sha1.ComputeHash(hostBytes);
+                                                    }
+
+                                                    var result = Convert.ToBase64String(hostHashBytes);
+                                                    if (result != hostHashBase64)
+                                                        writer.WriteLine(line);
+                                                }
+                                            }
+                                            catch
+                                            {
+                                                writer.WriteLine(line);
                                             }
                                         }
-                                        catch
-                                        {
-                                            writer.WriteLine(line);
-                                        }
                                     }
+
+                                    writer.WriteLine($"|1|{info.Salt}|{info.HostHash} {e.HostKeyName} {info.Key}");
+
+                                    File.WriteAllText("/etc/jumper/known_hosts", writer.ToString());
                                 }
-
-                                writer.WriteLine($"|1|{info.Salt}|{info.HostHash} {e.HostKeyName} {info.Key}");
-
-                                File.WriteAllText("/etc/jumper/known_hosts", writer.ToString());
                             }
                         }
                         catch
@@ -152,7 +155,8 @@ public class LocationSetupMenu
                                     try
                                     {
                                         Configuration.Current.Locations.Add(location);
-                                        File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
+                                        using (var _ = new FileOperation("/etc/jumper/config.yml")) 
+                                            File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
                                     }
                                     catch
                                     {
@@ -178,7 +182,8 @@ public class LocationSetupMenu
                                     try
                                     {
                                         Configuration.Current.Locations.Add(location);
-                                        File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
+                                        using (var _ = new FileOperation("/etc/jumper/config.yml"))
+                                            File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
                                     }
                                     catch
                                     {
@@ -202,7 +207,8 @@ public class LocationSetupMenu
                                     try
                                     {
                                         Configuration.Current.Locations.Add(location);
-                                        File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
+                                        using (var _ = new FileOperation("/etc/jumper/config.yml"))
+                                            File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
                                     }
                                     catch
                                     {
@@ -338,7 +344,8 @@ public class LocationSetupMenu
                     {
                         location.StartPinging();
                         Configuration.Current.Locations.Add(location);
-                        File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
+                        using (var _ = new FileOperation("/etc/jumper/config.yml"))
+                            File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
                     }
                     catch (Exception e)
                     {
@@ -370,7 +377,8 @@ public class LocationSetupMenu
                 {
                     location.StartPinging();
                     Configuration.Current.Locations.Add(location);
-                    File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
+                    using (var _ = new FileOperation("/etc/jumper/config.yml"))
+                        File.WriteAllText("/etc/jumper/config.yml", Configuration.Current.Serialize());
                 }
                 catch
                 {
