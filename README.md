@@ -74,6 +74,12 @@ Upon logging in, you will be directed to add SSH entries via the secure admin in
 
 - Configuration files are located at `/etc/jumper`.
 
+### Planned Features
+
+- **User management** allowing for per-user server access rules from an administrative jumper user
+- **Key based authentication** option for jumper users
+- **Access log**
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](https://github.com/Ameliorated-LLC/jumper/blob/main/LICENSE) file for more details.
