@@ -1,0 +1,20 @@
+Architectures: amd64
+Codename: focal
+Components: main
+Date: Wed, 20 Nov 2024 02:26:22 +0000
+MD5Sum:
+ 8d0de5f891daeb939e5b2a699a0478fb               92 Release
+ 728f944e0e98ae7e464af69d49d511f4              590 main/binary-amd64/Packages
+ d868a2e3213811f3f61f55621b081830              438 main/binary-amd64/Packages.gz
+SHA1:
+ 6d8ff9c0a8153a901162a6f561282c6a610d6486               92 Release
+ 6bae8e6b2b952662e7ae6e0cc66c4b65df88e07e              590 main/binary-amd64/Packages
+ bf1b434893c346f140b1dd6c8ea3ce5bd72a6624              438 main/binary-amd64/Packages.gz
+SHA256:
+ c7bfc40bdf0177787442e2ea65892285ebed565f7dca4e6e2dc265139ae2327b               92 Release
+ b2bb3b324af64e74f8b62428231613bd4c60c0f527efb5fca7976cb4afc7c141              590 main/binary-amd64/Packages
+ 85ebcf2004bb97b0410a2987500fa152b52d141e92c327546507b88328b5ec3b              438 main/binary-amd64/Packages.gz
+SHA512:
+ 405a95e7a13e2339b61a391ecd9fb7ffca8013c505fbd28a718b65b8990cb084ce05887c02395ca948dade4e3637b8b75504e4d5fb6dfc7a876ab9beb1c4302d               92 Release
+ 8fe905f1aea67608928416b3752e91b23a840fc24bf5e965d91b8ad63593075d04b5b467d93f9beb4dffd8f47f0979be3cded5edffc2f42c7d9d9724c5fb41c5              590 main/binary-amd64/Packages
+ dd977028c8859b546092baf5871ecc3085a4a0dc30d1a2d0c66949e3c14a5a01cc45ae66fffbe5ec000ce97bd88ef72608b1cc355b4fcc9d5017b237f0cea851              438 main/binary-amd64/Packages.gz

@@ -1,0 +1,55 @@
+Architectures: amd64
+Components: main
+Date: Wed, 20 Nov 2024 02:26:22 +0000
+MD5Sum:
+ 728f944e0e98ae7e464af69d49d511f4              590 Packages
+ d868a2e3213811f3f61f55621b081830              438 Packages.gz
+ f35a6bf149890dcccf9074fd33c1cd15               76 Release
+ eb8ee3e78bbaee1029feb78a46a2035a             1402 dists/focal/Release
+ 58eec0b52642503985b7790df4a9e487              590 dists/focal/main/binary-amd64/Packages
+ 561ec22d40822ddb05897acce28f1e22              436 dists/focal/main/binary-amd64/Packages.gz
+ 0ce863ce79a5d5dae660797f01104f24             1402 dists/jammy/Release
+ 58eec0b52642503985b7790df4a9e487              590 dists/jammy/main/binary-amd64/Packages
+ 561ec22d40822ddb05897acce28f1e22              436 dists/jammy/main/binary-amd64/Packages.gz
+ c3ff653920f73042d28062d8f74799d0             1402 dists/noble/Release
+ 58eec0b52642503985b7790df4a9e487              590 dists/noble/main/binary-amd64/Packages
+ c6418ca7d666f38a93db2b67711bf64c              436 dists/noble/main/binary-amd64/Packages.gz
+SHA1:
+ 6bae8e6b2b952662e7ae6e0cc66c4b65df88e07e              590 Packages
+ bf1b434893c346f140b1dd6c8ea3ce5bd72a6624              438 Packages.gz
+ bdfe11f6f5dfbf79f3c6e9213af16fb45f9844d6               76 Release
+ 4d6cbaa5a25404137485e53a9922748988a4b50d             1402 dists/focal/Release
+ 3f67d71ef005f44f389d2a3d617baeb380f968a9              590 dists/focal/main/binary-amd64/Packages
+ 6ceda7759f7e2095bdbdf3f8f6ba4ba937bd8d12              436 dists/focal/main/binary-amd64/Packages.gz
+ 87a042f653eee783ae7c1faba73e1b8bdeaa744d             1402 dists/jammy/Release
+ 3f67d71ef005f44f389d2a3d617baeb380f968a9              590 dists/jammy/main/binary-amd64/Packages
+ 6ceda7759f7e2095bdbdf3f8f6ba4ba937bd8d12              436 dists/jammy/main/binary-amd64/Packages.gz
+ 4c68f5150f031dd316f566a5f83364f009096741             1402 dists/noble/Release
+ 3f67d71ef005f44f389d2a3d617baeb380f968a9              590 dists/noble/main/binary-amd64/Packages
+ 99f7a9cfdc5329f41a007ea8ef767e61b4d07b5e              436 dists/noble/main/binary-amd64/Packages.gz
+SHA256:
+ b2bb3b324af64e74f8b62428231613bd4c60c0f527efb5fca7976cb4afc7c141              590 Packages
+ 85ebcf2004bb97b0410a2987500fa152b52d141e92c327546507b88328b5ec3b              438 Packages.gz
+ a5c7a4309d46faa674ffeddc84da5bad6ffe251901f855632412abf04da6aaf8               76 Release
+ 78c686dac85f67f57bfdcf904c8262bd3311b3ac55b6d3cea39943d032350b08             1402 dists/focal/Release
+ fe4e3ee33ac37fbd8fef777e21b906ff744ed6a61bcee832f4bddd34481bb9b1              590 dists/focal/main/binary-amd64/Packages
+ 3234aeefb487fe1ac8801eed3d4fb30b4e8321531299a10368bf4d683aa5bf61              436 dists/focal/main/binary-amd64/Packages.gz
+ 5ab08d5e9c09d1ce69141cb760a00a08ce1236879e93860bea1a699e2d708263             1402 dists/jammy/Release
+ fe4e3ee33ac37fbd8fef777e21b906ff744ed6a61bcee832f4bddd34481bb9b1              590 dists/jammy/main/binary-amd64/Packages
+ 3234aeefb487fe1ac8801eed3d4fb30b4e8321531299a10368bf4d683aa5bf61              436 dists/jammy/main/binary-amd64/Packages.gz
+ fea7735e5c35aa6791c21667405e53da98693a04608693aa94d823b6058f46e4             1402 dists/noble/Release
+ fe4e3ee33ac37fbd8fef777e21b906ff744ed6a61bcee832f4bddd34481bb9b1              590 dists/noble/main/binary-amd64/Packages
+ 3a9a34efd8b4d1283bdf1d0fef2762df1eb54d92f0197a0fbc19b85dd07b435d              436 dists/noble/main/binary-amd64/Packages.gz
+SHA512:
+ 8fe905f1aea67608928416b3752e91b23a840fc24bf5e965d91b8ad63593075d04b5b467d93f9beb4dffd8f47f0979be3cded5edffc2f42c7d9d9724c5fb41c5              590 Packages
+ dd977028c8859b546092baf5871ecc3085a4a0dc30d1a2d0c66949e3c14a5a01cc45ae66fffbe5ec000ce97bd88ef72608b1cc355b4fcc9d5017b237f0cea851              438 Packages.gz
+ a03237a1552063061e3f48ff667f5712ca77f552f3c179af54d2df9fa6cfa0111215f6d4cd8ee03f4e69813c2136ae64eee6a2f5b1f3ff965d0663d85696505e               76 Release
+ ba7f8ab73add44355d9d1be45a42e8c02e2f98c4b7321291f4b2b80cf65cf7fd54a45754a95f4a50887b9439c4a04d17aa3c4ca2854d84391b6394d095a37c0a             1402 dists/focal/Release
+ 4281984575ea98c6c71cfed51919d45ccda2b4bc920acb158115481ca334c00a770741a138f7453cd49957b63eaa174b56e7cb1df5d3f4cea4ae9e1baa360340              590 dists/focal/main/binary-amd64/Packages
+ 29db460fc16ffbb61ea33c9493dc318edbccca18fdb98800d98cd160cd65d3f71e2602482b4a463643defb2dd718e153343b0be1cb810eebd8ed9d3cba3ce871              436 dists/focal/main/binary-amd64/Packages.gz
+ b05c7e6f2590ff6f79acb0a56857690910ab8d4a4f40c0935bd76ed6e9a37add8ddc01b81dad644d63b9c5994b39f5f3005165b16e5e1db90c5a26f5b9e982df             1402 dists/jammy/Release
+ 4281984575ea98c6c71cfed51919d45ccda2b4bc920acb158115481ca334c00a770741a138f7453cd49957b63eaa174b56e7cb1df5d3f4cea4ae9e1baa360340              590 dists/jammy/main/binary-amd64/Packages
+ 29db460fc16ffbb61ea33c9493dc318edbccca18fdb98800d98cd160cd65d3f71e2602482b4a463643defb2dd718e153343b0be1cb810eebd8ed9d3cba3ce871              436 dists/jammy/main/binary-amd64/Packages.gz
+ f4091053924eb51ff55d511c259a0b5cad0bd051702f2215e22abf5777ca96fd71771772072ec9dfa0dafc93067a22c6cfd718b5dbd9c96133df486a30824b01             1402 dists/noble/Release
+ 4281984575ea98c6c71cfed51919d45ccda2b4bc920acb158115481ca334c00a770741a138f7453cd49957b63eaa174b56e7cb1df5d3f4cea4ae9e1baa360340              590 dists/noble/main/binary-amd64/Packages
+ 9c6870804a168883f0d713ac3ea6e684aa9c0843649b7c488105a55efa520ffc21e144a8c7abb17e1c7768eb750ccb568216bd1f4a8b58a9adbee89e0b859853              436 dists/noble/main/binary-amd64/Packages.gz

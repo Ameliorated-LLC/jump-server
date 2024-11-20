@@ -1,0 +1,40 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Architectures: amd64
+Codename: jammy
+Components: main
+Date: Wed, 20 Nov 2024 02:26:23 +0000
+MD5Sum:
+ 078b03d4d1acf4fd5276beaeef73e0e0               92 Release
+ 728f944e0e98ae7e464af69d49d511f4              590 main/binary-amd64/Packages
+ 1c78ad9e6324b6d782b09b67f9317453              438 main/binary-amd64/Packages.gz
+SHA1:
+ 3c864a0eabce84b74c59e5a37f6a942c1fb8c9df               92 Release
+ 6bae8e6b2b952662e7ae6e0cc66c4b65df88e07e              590 main/binary-amd64/Packages
+ aec17a664495fddb5d702f85695dab3124b81596              438 main/binary-amd64/Packages.gz
+SHA256:
+ 0ed4301c8cf61caf495c57a0296c0036519fccb2398e23a2c908e2996acfed72               92 Release
+ b2bb3b324af64e74f8b62428231613bd4c60c0f527efb5fca7976cb4afc7c141              590 main/binary-amd64/Packages
+ c6ea90dc744a4701a2b8f4b8b1d1bf7284f48bcdd1e38cf757a6ea5ed9ea1041              438 main/binary-amd64/Packages.gz
+SHA512:
+ 12e6fc4d76cf409de7682a9c56bbd9d28d673938edac8902fe76d1e583b8e4cbecbec9ea3493f659cc9f29bad0ba188ddcbc757bbe871711fece0e456d282a45               92 Release
+ 8fe905f1aea67608928416b3752e91b23a840fc24bf5e965d91b8ad63593075d04b5b467d93f9beb4dffd8f47f0979be3cded5edffc2f42c7d9d9724c5fb41c5              590 main/binary-amd64/Packages
+ 5cd925e62ee858dc47b83cf71b84b6a4bec84a3b152c626456d8489edeeda697b4d7080f00d049ca9ab935e2230c6de739ef172d535a72823a703e02443b5acb              438 main/binary-amd64/Packages.gz
+-----BEGIN PGP SIGNATURE-----
+
+iQJSBAEBCgA8FiEEcMQODzhN75YrGBevulzLJHOlAsEFAmc9SM8eHHN0eXJpc19w
+YWNrYWdpbmdAZmFzdG1haWwuY29tAAoJELpcyyRzpQLBWygP/jEkacQQW8TLaeCT
+T6REkBVVjZt271Pn9kw6RkmgMe29S79neHD51USL9Z+JkIBzhlrGU67utvdLfa5r
+sm0Fa7ACyyUkOA3h9I0KewSL/ExlEzCF7sVF1rVM559wFL6MEBfrjxeX2qHnkgK8
+YVS22oAB2BzWvUko+YhqmtgyZfA3xl4Cxg2Zz+oNg/qULipiqnIOiJcuQMsFqqS/
+6L1u/1g5INHWBl3Isan5VIlwvg82EJC+a6DH8+Ackb/BPRzGd+qjneQZh+jLNLtQ
+Ru1LzzXDoGkJiNhu05Bs7XNQnuClIbSuNfSJ8BVsslDWtrD36Dvxb5Ot1LaVy76b
+9OQWfslSXuu+dOndWR5K8vf38G9KZax7D7PIBfg1ju04UenJdB7AtvUJhbg46/UC
+LZvRH6vtDT6lzXH/JFf5eaqea6UYPTc6mjVLtOKUczSigYf0C8CF3mSAaHEpisQC
+wh9a+UO26bIjrcLJoL1n+BrzLF+DaW0F9TgBOxg3W6QEGeFOPumaDptoVnhVjDwN
+9XtOIpR6D38wNdn3wTn+Zqwtl+7AduhiZjjMIwKgTLhm9dX0cOb/e1xUUORQL9zC
+iVMDh6S/nqKZI9Iuy/7rVpimj1JlW29RweQNrQky5OGmuaDZz0t5zYvSvyhbTaq4
+HIeTkeu9PdT9bDKHz9EVDBVe+RQ3
+=PuDt
+-----END PGP SIGNATURE-----

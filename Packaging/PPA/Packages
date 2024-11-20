@@ -1,0 +1,15 @@
+Package: jumper
+Architecture: amd64
+Version: 0.1.0-1
+Priority: optional
+Section: base
+Maintainer: Ameliorated LLC
+Depends: zlib1g, libc6, iputils-ping, openssh-client, openssh-server
+Filename: pool/main/j/jumper/jumper_0.1.0-1_amd64.deb
+Size: 9853910
+MD5sum: 169bf54e756a041bac7554dfc420455e
+SHA1: ca4bdb5547a376621d7f35646017c6eb46f37a01
+SHA256: d2f59807c249f1d6dee37dd9c197a01e196c8c483ad5b366359a8cab30f5d9aa
+SHA512: 0af13ac54e59679589ef77deb860f9375983a24bd6dd472b754d53063bc3cfcb3a0d7665ca8ef5d6dbdd7c4dccb53f66b41321086f5c435d04f71bb712319ebc
+Description: Secure jump server manager
+

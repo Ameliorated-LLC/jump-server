@@ -1,0 +1,1 @@
+deb [signed-by=/etc/apt/trusted.gpg.d/jumper.gpg] https://ameliorated-llc.github.io/jumper/Packaging/PPA ./
