@@ -63,11 +63,12 @@ git filter-repo --path-regex "^Packaging/PPA/(?!.*\.gitkeep$).*$" --invert-paths
 if [ "$CACHED" = true ]; then
   git reset HEAD~
 fi
-git add "Packaging/PPA/*"
 
 git remote add origin https://github.com/Ameliorated-LLC/jumper
 git fetch origin
 git branch --set-upstream-to=origin/main main
+
+git add "Packaging/PPA/*"
 
 cp -rf /tmp/JumpPPA/* "$SCRIPT_DIR/PPA"
 rm -rf "/tmp/JumpPPA"
