@@ -23,22 +23,26 @@ public class AuthenticateMenu
             var password = ReadPassword(tries);
             TerminalCommands.Execute(TerminalCommand.HideCursor);
             
-            if (string.IsNullOrEmpty(password))
+            if (password == null)
                 return false;
 
-            string base64;
-            using (var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password)))
+            if (password.Length != 0)
             {
-                argon2.Salt = Encoding.UTF8.GetBytes("jumper-salt");
-                argon2.DegreeOfParallelism = 8;
-                argon2.MemorySize = 65536;
-                argon2.Iterations = 10;
+                string base64;
+                using (var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password)))
+                {
+                    argon2.Salt = Encoding.UTF8.GetBytes("jumper-salt");
+                    argon2.DegreeOfParallelism = 8;
+                    argon2.MemorySize = 65536;
+                    argon2.Iterations = 10;
 
-                byte[] hashBytes = argon2.GetBytes(32);
-                base64 = Convert.ToBase64String(hashBytes);
+                    byte[] hashBytes = argon2.GetBytes(32);
+                    base64 = Convert.ToBase64String(hashBytes);
+                }
+
+                if (base64 == Configuration.Current.AdminPassword)
+                    return true;
             }
-            if (base64 == Configuration.Current.AdminPassword)
-                return true;
 
             tries++;
             
