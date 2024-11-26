@@ -3,3 +3,4 @@ obj
 bin
 !Packaging/DPKG/usr/bin
 ppa-private-key.asc
+*.DotSettings.user

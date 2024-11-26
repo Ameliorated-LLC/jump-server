@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostInstallScript", "PostIn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostRemoveScript", "PostRemoveScript\PostRemoveScript.csproj", "{4071FA63-3C60-49C9-BE4D-487C8C1041F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SshNet.Keygen", "SshNet.Keygen\SshNet.Keygen.csproj", "{6A2CC913-DE7D-40E2-AB18-BAC59CE16181}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -24,5 +26,9 @@ Global
 		{4071FA63-3C60-49C9-BE4D-487C8C1041F1}.Debug|x64.Build.0 = Debug|Any CPU
 		{4071FA63-3C60-49C9-BE4D-487C8C1041F1}.Release|x64.ActiveCfg = Release|Any CPU
 		{4071FA63-3C60-49C9-BE4D-487C8C1041F1}.Release|x64.Build.0 = Release|Any CPU
+		{6A2CC913-DE7D-40E2-AB18-BAC59CE16181}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6A2CC913-DE7D-40E2-AB18-BAC59CE16181}.Debug|x64.Build.0 = Debug|Any CPU
+		{6A2CC913-DE7D-40E2-AB18-BAC59CE16181}.Release|x64.ActiveCfg = Release|Any CPU
+		{6A2CC913-DE7D-40E2-AB18-BAC59CE16181}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
